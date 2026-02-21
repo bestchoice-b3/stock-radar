@@ -7,6 +7,30 @@ import type { Indicator } from '@/types/supabase';
 export const revalidate = 0; // Revalidate data on every request
 
 export default async function Home() {
+  // Handle initialization error from client.ts
+  if ('error' in supabase) {
+    return (
+      <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
+        <div className="z-10 w-full max-w-7xl">
+          <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-8">
+            Visualizador de Dados do Supabase
+          </h1>
+        </div>
+        <Alert variant="destructive" className="w-full max-w-7xl mb-8">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Erro de Configuração</AlertTitle>
+          <AlertDescription>
+            Não foi possível conectar ao Supabase. Verifique suas configurações.
+            <pre className="mt-2 text-xs bg-destructive-foreground/10 p-2 rounded-md font-code">{supabase.error}</pre>
+          </AlertDescription>
+        </Alert>
+         <div className="w-full max-w-7xl">
+          <IndicatorsTable data={[]} />
+        </div>
+      </main>
+    );
+  }
+
   const { data, error } = await supabase
     .from('indicators')
     .select('id,created_at,ticker,update_at,image_mt5')

@@ -1,16 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const initializeSupabase = (): SupabaseClient | { error: string } => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // In a real app, you'd want to handle this more gracefully.
-  // For this example, we'll throw an error during development if keys are missing.
-  if (process.env.NODE_ENV === 'development') {
-    console.warn('Supabase URL and/or anonymous key are not defined in .env.local. The app will not be able to connect to Supabase.');
+  if (!supabaseUrl || supabaseUrl.includes('SUA_URL_SUPABASE_AQUI') || !supabaseAnonKey || supabaseAnonKey.includes('SUA_CHAVE_ANON_AQUI')) {
+    const message = 'As credenciais do Supabase não estão configuradas no arquivo .env.local. Por favor, adicione a URL e a chave anon do seu projeto.';
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(message);
+    }
+    return { error: message };
+  }
+  
+  try {
+    return createClient(supabaseUrl, supabaseAnonKey);
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    const fullMessage = `Falha ao criar o cliente Supabase: "${errorMessage}". Verifique se a URL em .env.local está bem formatada (ex: https://<id>.supabase.co).`;
+    if (process.env.NODE_ENV === 'development') {
+      console.error(fullMessage);
+    }
+    return { error: fullMessage };
   }
 }
 
-// The client is created with possibly empty strings, but Supabase client handles this.
-// API calls will fail if credentials are not provided, which is handled in the UI.
-export const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
+export const supabase = initializeSupabase();
