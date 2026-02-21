@@ -83,7 +83,11 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 <TableCell colSpan={4} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
-                    Sua tabela 'indicators' no Supabase parece estar vazia. Adicione alguns dados para vê-los listados aqui.
+                    Verifique se sua tabela 'indicators' no Supabase contém dados.
+                  </p>
+                   <p className="text-sm text-muted-foreground mt-2">
+                    Se houver dados, o problema pode ser a Segurança em Nível de Linha (RLS). 
+                    <a href="https://supabase.com/docs/guides/auth/row-level-security" target="_blank" rel="noopener noreferrer" className="underline text-accent font-medium"> Crie uma política de acesso</a> no Supabase.
                   </p>
                 </TableCell>
               </TableRow>
