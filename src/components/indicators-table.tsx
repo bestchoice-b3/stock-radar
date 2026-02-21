@@ -45,10 +45,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[120px]">Ticker</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Updated At</TableHead>
-              <TableHead className="text-right w-[120px]">Chart Image</TableHead>
+              <TableHead className="w-[120px]">Ativo</TableHead>
+              <TableHead>Criado em</TableHead>
+              <TableHead>Atualizado em</TableHead>
+              <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -66,13 +66,13 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setSelectedImage(indicator.image_mt5)}
-                        aria-label="View chart image"
+                        aria-label="Ver imagem do gráfico"
                       >
                         <ImageIcon className="h-5 w-5 text-accent" />
                       </Button>
                     ) : (
                       <div className="flex justify-end items-center pr-4">
-                        <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="No image available" />
+                        <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="Nenhuma imagem disponível" />
                       </div>
                     )}
                   </TableCell>
@@ -80,8 +80,11 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                  No data found.
+                <TableCell colSpan={4} className="h-24 text-center">
+                  <p className="font-medium">Nenhum dado encontrado</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sua tabela 'indicators' no Supabase parece estar vazia. Adicione alguns dados para vê-los listados aqui.
+                  </p>
                 </TableCell>
               </TableRow>
             )}
@@ -95,14 +98,14 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
       >
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle className="font-headline">Chart Image Preview</DialogTitle>
+            <DialogTitle className="font-headline">Visualização da Imagem do Gráfico</DialogTitle>
           </DialogHeader>
           <div className="mt-4 flex justify-center bg-muted/20 p-4 rounded-lg border">
             {selectedImage && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={`data:image/png;base64,${selectedImage}`}
-                alt="Indicator Chart"
+                alt="Gráfico do Indicador"
                 className="rounded-md shadow-lg max-w-full h-auto"
               />
             )}

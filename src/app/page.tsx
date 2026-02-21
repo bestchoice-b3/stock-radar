@@ -19,16 +19,16 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
       <div className="z-10 w-full max-w-7xl">
         <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-8">
-          Supabase Data Lister
+          Visualizador de Dados do Supabase
         </h1>
       </div>
 
       {error && (
         <Alert variant="destructive" className="w-full max-w-7xl mb-8">
           <Terminal className="h-4 w-4" />
-          <AlertTitle>Error Fetching Data</AlertTitle>
+          <AlertTitle>Erro ao Buscar Dados</AlertTitle>
           <AlertDescription>
-            Could not fetch indicators from Supabase. Please check your connection and .env settings.
+            Não foi possível buscar os indicadores do Supabase. Verifique sua conexão e as configurações do .env.
             <pre className="mt-2 text-xs bg-destructive-foreground/10 p-2 rounded-md font-code">{error.message}</pre>
           </AlertDescription>
         </Alert>
