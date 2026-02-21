@@ -1,3 +1,42 @@
-export default function Home() {
-  return <></>;
+import { supabase } from '@/lib/supabase/client';
+import IndicatorsTable from '@/components/indicators-table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+import type { Indicator } from '@/types/supabase';
+
+export const revalidate = 0; // Revalidate data on every request
+
+export default async function Home() {
+  const { data, error } = await supabase
+    .from('indicators')
+    .select('id,created_at,ticker,update_at,image_mt5')
+    .order('created_at', { ascending: false });
+
+  // The Supabase client might return a more generic type, so we cast it here.
+  const indicators: Indicator[] = data || [];
+
+  return (
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
+      <div className="z-10 w-full max-w-7xl">
+        <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-8">
+          Supabase Data Lister
+        </h1>
+      </div>
+
+      {error && (
+        <Alert variant="destructive" className="w-full max-w-7xl mb-8">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Error Fetching Data</AlertTitle>
+          <AlertDescription>
+            Could not fetch indicators from Supabase. Please check your connection and .env settings.
+            <pre className="mt-2 text-xs bg-destructive-foreground/10 p-2 rounded-md font-code">{error.message}</pre>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="w-full max-w-7xl">
+        <IndicatorsTable data={indicators} />
+      </div>
+    </main>
+  );
 }
