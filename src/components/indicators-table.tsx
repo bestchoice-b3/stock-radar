@@ -20,7 +20,6 @@ import {
 import { Card } from "@/components/ui/card";
 import { ImageIcon, ImageOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { format } from 'date-fns';
 
 type IndicatorsTableProps = {
   data: Indicator[];
@@ -29,16 +28,6 @@ type IndicatorsTableProps = {
 export default function IndicatorsTable({ data }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    try {
-      // Supabase returns ISO 8601 strings, which new Date() can parse.
-      return format(new Date(dateString), 'dd/MM/yyyy HH:mm:ss');
-    } catch (e) {
-      return 'Invalid Date';
-    }
-  };
-  
   return (
     <>
       <Card>
@@ -46,8 +35,6 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
-              <TableHead>Criado em</TableHead>
-              <TableHead>Atualizado em</TableHead>
               <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
           </TableHeader>
@@ -58,8 +45,6 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                   <TableCell>
                     <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{formatDate(indicator.created_at)}</TableCell>
-                  <TableCell className="text-muted-foreground">{formatDate(indicator.update_at)}</TableCell>
                   <TableCell className="text-right">
                     {indicator.image_mt5 ? (
                       <Button
@@ -80,7 +65,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={2} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.

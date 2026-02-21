@@ -33,8 +33,8 @@ export default async function Home() {
 
   const { data, error } = await supabase
     .from('indicators')
-    .select('id,created_at,ticker,update_at,image_mt5')
-    .order('created_at', { ascending: false });
+    .select('id,ticker,image_mt5')
+    .order('id', { ascending: false });
 
   // The Supabase client might return a more generic type, so we cast it here.
   const indicators: Indicator[] = data || [];
