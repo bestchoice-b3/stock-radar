@@ -108,7 +108,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
             {selectedImage && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={`data:image/png;base64,${selectedImage}`}
+                src={selectedImage.startsWith('data:image') ? selectedImage : `data:image/png;base64,${selectedImage}`}
                 alt="Gráfico do Indicador"
                 className="rounded-md shadow-lg max-w-full h-auto"
               />
