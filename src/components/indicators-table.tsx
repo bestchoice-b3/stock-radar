@@ -106,6 +106,10 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
 
                   const dm200Score = signalBuy ? 2 : 0;
 
+                  const volumeData = dataVolume?.items?.[indicator.ticker];
+                  const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
+                  const volumeScore = isHighChangeVolume ? 1 : 0;
+
                   const score =
                     (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
                     (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
@@ -113,7 +117,8 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                     plScore +
                     dyScore +
                     mLiquidaScore + 
-                    dm200Score;
+                    dm200Score +
+                    volumeScore;
                   
                   const scoreBreakdown = {
                       "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
@@ -123,10 +128,9 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                       "dy_alto": dyScore,
                       "margem_liquida_alta": mLiquidaScore,
                       "dm200_compra": dm200Score,
+                      "volume_change_positivo": volumeScore,
                       "score_total": score
                   };
-
-                  const hasVolume = !!(dataVolume?.items && indicator.ticker in dataVolume.items);
                   
 
                   return (
@@ -211,10 +215,10 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                       </TableCell>
                        <TableCell
                         className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: (dataVolume?.items && dataVolume.items[indicator.ticker]) || { info: "Ticker não encontrado nos dados de volume."} })}
+                        onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: volumeData || { info: "Ticker não encontrado nos dados de volume."} })}
                        >
                         <div className="flex items-center">
-                          {hasVolume ? (
+                          {isHighChangeVolume ? (
                             <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                           ) : (
                             <Star className="h-5 w-5 text-muted-foreground" />
