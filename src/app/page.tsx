@@ -33,7 +33,7 @@ export default async function Home() {
 
   const { data, error } = await supabase
     .from('indicators')
-    .select('id,ticker,image_mt5')
+    .select('id,ticker,image_mt5,data_obv')
     .order('id', { ascending: false });
 
   // The Supabase client might return a more generic type, so we cast it here.

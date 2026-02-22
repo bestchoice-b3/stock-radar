@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type IndicatorsTableProps = {
@@ -35,6 +35,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
+              <TableHead>OBV</TableHead>
               <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
           </TableHeader>
@@ -44,6 +45,16 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 <TableRow key={indicator.id}>
                   <TableCell>
                     <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      {indicator.data_obv?.trajectory === 'ascendente' && (
+                        <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                      )}
+                      {indicator.data_obv?.trajectory === 'descendente' && (
+                        <ArrowDown className="h-5 w-5 text-destructive" />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     {indicator.image_mt5 ? (
@@ -65,7 +76,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={2} className="h-24 text-center">
+                <TableCell colSpan={3} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
