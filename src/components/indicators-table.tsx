@@ -375,7 +375,14 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicador ADX', data: indicator.data_adx })}
+                           onClick={() => {
+                              if (indicator.data_adx) {
+                                  const { ticker, timeframe, ...adxData } = indicator.data_adx;
+                                  setJsonData({ title: 'Indicador ADX', data: adxData });
+                              } else {
+                                  setJsonData({ title: 'Indicador ADX', data: { info: "Nenhum dado ADX encontrado." } });
+                              }
+                          }}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -394,7 +401,13 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicador Insiders', data: indicator.data_insiders })}
+                          onClick={() => {
+                              const formattedData = indicator.data_insiders?.items?.map(item => ({
+                                  date: item.date,
+                                  valor: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor)
+                              }));
+                              setJsonData({ title: 'Indicador Insiders', data: formattedData && formattedData.length > 0 ? formattedData : { info: "Nenhum dado de insider encontrado." } });
+                          }}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>

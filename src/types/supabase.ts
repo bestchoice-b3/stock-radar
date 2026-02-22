@@ -6,6 +6,8 @@ export type Indicator = {
     trajectory: 'ascendente' | 'descendente';
   } | null;
   data_adx: {
+    ticker?: string;
+    timeframe?: string;
     values: {
       plus_di_signal: boolean;
       minus_di_signal: boolean;
@@ -14,6 +16,8 @@ export type Indicator = {
   data_insiders: {
     items: {
       quantidade: number;
+      date: string;
+      valor: number;
     }[];
   } | null;
   data_indicators: {
