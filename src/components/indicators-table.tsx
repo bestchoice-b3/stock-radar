@@ -59,15 +59,24 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 
                 const plHistoricoMedia = indicatorsData?.pl_historico?.media;
                 const pl = indicatorsData?.pl;
+                const dy = indicatorsData?.dy;
+                const mLiquida = indicatorsData?.m_liquida;
+
 
                 const plScore =
                   plHistoricoMedia != null && pl != null && plHistoricoMedia > pl ? 1 : 0;
                 
+                const dyScore = dy != null && dy > 6 ? 1 : 0;
+
+                const mLiquidaScore = mLiquida != null && mLiquida > 10 ? 1 : 0;
+
                 const score =
                   (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
                   (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
                   (insidersQuantidade > 0 ? 1 : 0) +
-                  plScore;
+                  plScore +
+                  dyScore +
+                  mLiquidaScore;
 
 
                 return (
@@ -77,7 +86,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                     </TableCell>
                     <TableCell>{indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}</TableCell>
                     <TableCell>{pl != null ? pl.toFixed(2) : 'N/A'}</TableCell>
-                    <TableCell>{indicatorsData?.m_liquida != null ? indicatorsData.m_liquida.toFixed(2) : 'N/A'}</TableCell>
+                    <TableCell>{indicatorsData?.m_liquida != null ? `${indicatorsData.m_liquida.toFixed(2)}%` : 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         {plHistoricoMedia != null && pl != null ? (
