@@ -89,13 +89,20 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
 
                   const mLiquidaScore = mLiquida != null && mLiquida > 10 ? 1 : 0;
 
+                  const peaksValleysData = indicator.data_peaks_valleys;
+                  const signalBuy = peaksValleysData?.signal_buy;
+                  const signalSell = peaksValleysData?.signal_sell;
+
+                  const dm200Score = signalBuy ? 2 : 0;
+
                   const score =
                     (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
                     (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
                     (insidersQuantidade > 0 ? 1 : 0) +
                     plScore +
                     dyScore +
-                    mLiquidaScore;
+                    mLiquidaScore + 
+                    dm200Score;
                   
                   const scoreBreakdown = {
                       "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
@@ -104,13 +111,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                       "pl_descontado": plScore,
                       "dy_alto": dyScore,
                       "margem_liquida_alta": mLiquidaScore,
+                      "dm200_compra": dm200Score,
                       "score_total": score
                   };
                   
-                  const peaksValleysData = indicator.data_peaks_valleys;
-                  const signalBuy = peaksValleysData?.signal_buy;
-                  const signalSell = peaksValleysData?.signal_sell;
-
 
                   return (
                     <TableRow key={indicator.id}>
