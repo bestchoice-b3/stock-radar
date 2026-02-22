@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown, Notebook } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import JsonAsTable from "./json-as-table";
 import {
@@ -27,6 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import NotesModal from "./notes-modal";
 
 type IndicatorsTableProps = {
   data: Indicator[];
@@ -40,6 +41,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<{ title: string; data: object | null | any[] } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }[]>([]);
+  const [notesTicker, setNotesTicker] = useState<string | null>(null);
 
   const processedAndSortedData = useMemo(() => {
     const processedData = data.map((indicator) => {
@@ -258,7 +260,8 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         Score {getSortIcon('score')}
                     </Button>
                 </TableHead>
-                <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
+                <TableHead className="text-right w-[120px]">Imagem</TableHead>
+                <TableHead className="text-center w-[120px]">Anotações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -431,12 +434,22 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                           </div>
                         )}
                       </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setNotesTicker(indicator.ticker)}
+                          aria-label={`Anotações para ${indicator.ticker}`}
+                        >
+                          <Notebook className="h-5 w-5 text-accent" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={13} className="h-24 text-center">
+                  <TableCell colSpan={14} className="h-24 text-center">
                     <p className="font-medium">Nenhum dado encontrado</p>
                     <p className="text-sm text-muted-foreground">
                       Verifique se sua tabela 'indicators' no Supabase contém dados.
@@ -484,6 +497,12 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           </div>
         </DialogContent>
       </Dialog>
+
+      <NotesModal 
+        isOpen={!!notesTicker}
+        ticker={notesTicker}
+        onClose={() => setNotesTicker(null)}
+      />
     </>
   );
 }

@@ -63,3 +63,11 @@ export type IndicatorsCommonData = {
     };
   } | null;
 } | null;
+
+export type Note = {
+  id: number;
+  created_at: string;
+  ticker: string;
+  comment: string;
+  user_id: string;
+};
