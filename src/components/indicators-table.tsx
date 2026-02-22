@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Indicator, DataVolume } from "@/types/supabase";
+import type { Indicator, IndicatorsCommonData } from "@/types/supabase";
 import {
   Table,
   TableBody,
@@ -30,10 +30,10 @@ import {
 
 type IndicatorsTableProps = {
   data: Indicator[];
-  dataVolume: DataVolume | null;
+  commonData: IndicatorsCommonData | null;
 };
 
-export default function IndicatorsTable({ data, dataVolume }: IndicatorsTableProps) {
+export default function IndicatorsTable({ data, commonData }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<{ title: string; data: object | null } | null>(null);
 
@@ -72,6 +72,16 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                     </TooltipContent>
                   </Tooltip>
                 </TableHead>
+                <TableHead>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-help">MF</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Magic Formula</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TableHead>
                 <TableHead>Score</TableHead>
                 <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
               </TableRow>
@@ -106,9 +116,13 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
 
                   const dm200Score = signalBuy ? 2 : 0;
 
-                  const volumeData = dataVolume?.items?.[indicator.ticker];
+                  const volumeData = commonData?.data_volume?.items?.[indicator.ticker];
                   const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
                   const volumeScore = isHighChangeVolume ? 1 : 0;
+
+                  const isMagicFormula = !!(commonData?.data_magic_formula?.items && indicator.ticker in commonData.data_magic_formula.items);
+                  const magicFormulaScore = isMagicFormula ? 1 : 0;
+                  const magicFormulaData = commonData?.data_magic_formula?.items?.[indicator.ticker];
 
                   const score =
                     (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
@@ -118,7 +132,8 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                     dyScore +
                     mLiquidaScore + 
                     dm200Score +
-                    volumeScore;
+                    volumeScore +
+                    magicFormulaScore;
                   
                   const scoreBreakdown = {
                       "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
@@ -129,6 +144,7 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                       "margem_liquida_alta": mLiquidaScore,
                       "dm200_compra": dm200Score,
                       "volume_change_positivo": volumeScore,
+                      "magic_formula": magicFormulaScore,
                       "score_total": score
                   };
                   
@@ -241,6 +257,18 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                       </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
+                        onClick={() => setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: magicFormulaData || { info: "Ticker não encontrado na Magic Formula." } })}
+                      >
+                        <div className="flex items-center">
+                          {isMagicFormula ? (
+                            <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                          ) : (
+                            <Star className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        className="cursor-pointer hover:bg-muted"
                         onClick={() => setJsonData({ title: `Cálculo do Score: ${indicator.ticker}`, data: scoreBreakdown })}
                       >
                         {score}
@@ -270,7 +298,7 @@ export default function IndicatorsTable({ data, dataVolume }: IndicatorsTablePro
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={11} className="h-24 text-center">
+                  <TableCell colSpan={12} className="h-24 text-center">
                     <p className="font-medium">Nenhum dado encontrado</p>
                     <p className="text-sm text-muted-foreground">
                       Verifique se sua tabela 'indicators' no Supabase contém dados.

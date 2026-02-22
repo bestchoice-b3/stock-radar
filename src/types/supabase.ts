@@ -32,15 +32,32 @@ export type Indicator = {
   } | null;
 };
 
-export type DataVolume = {
-  items: {
-    [ticker: string]: {
-      site: string;
-      tipo: string;
-      close: number;
-      change: number;
-      source: string;
-      ticker: string;
+export type IndicatorsCommonData = {
+  data_volume: {
+    items: {
+      [ticker: string]: {
+        site: string;
+        tipo: string;
+        close: number;
+        change: number;
+        source: string;
+        ticker: string;
+      };
     };
-  };
+  } | null;
+  data_magic_formula: {
+    items: {
+      [ticker: string]: {
+        eps: number;
+        name: string;
+        roic: number;
+        site: string;
+        price: number;
+        source: string;
+        symbol: string;
+        ticker: string;
+        ev_ebit: number;
+      };
+    };
+  } | null;
 } | null;
