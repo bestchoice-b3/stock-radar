@@ -26,4 +26,8 @@ export type Indicator = {
       } | null;
     }[];
   } | null;
+  data_peaks_valleys: {
+    signal_sell: boolean;
+    signal_buy: boolean;
+  } | null;
 };

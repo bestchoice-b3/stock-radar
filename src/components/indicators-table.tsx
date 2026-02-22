@@ -106,6 +106,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                       "margem_liquida_alta": mLiquidaScore,
                       "score_total": score
                   };
+                  
+                  const peaksValleysData = indicator.data_peaks_valleys;
+                  const signalBuy = peaksValleysData?.signal_buy;
+                  const signalSell = peaksValleysData?.signal_sell;
 
 
                   return (
@@ -188,8 +192,19 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        N/A
+                      <TableCell
+                        className="cursor-pointer hover:bg-muted"
+                        onClick={() => setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: indicator.data_peaks_valleys })}
+                      >
+                        <div className="flex items-center">
+                          {signalBuy === signalSell ? (
+                            <Minus className="h-5 w-5 text-muted-foreground" />
+                          ) : signalBuy ? (
+                            <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                          ) : (
+                            <ArrowDown className="h-5 w-5 text-destructive" />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
