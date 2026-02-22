@@ -44,7 +44,9 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
           <TableBody>
             {data.length > 0 ? (
               data.map((indicator) => {
-                const score = indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0;
+                const score =
+                  (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
+                  (indicator.data_adx?.values?.plus_di_signal ? 1 : 0);
                 return (
                   <TableRow key={indicator.id}>
                     <TableCell>
