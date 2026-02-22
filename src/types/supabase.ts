@@ -31,3 +31,16 @@ export type Indicator = {
     signal_buy: boolean;
   } | null;
 };
+
+export type DataVolume = {
+  items: {
+    [ticker: string]: {
+      site: string;
+      tipo: string;
+      close: number;
+      change: number;
+      source: string;
+      ticker: string;
+    };
+  };
+} | null;

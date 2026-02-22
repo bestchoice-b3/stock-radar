@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Indicator } from "@/types/supabase";
+import type { Indicator, DataVolume } from "@/types/supabase";
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import JsonAsTable from "./json-as-table";
 import {
@@ -30,9 +30,10 @@ import {
 
 type IndicatorsTableProps = {
   data: Indicator[];
+  dataVolume: DataVolume | null;
 };
 
-export default function IndicatorsTable({ data }: IndicatorsTableProps) {
+export default function IndicatorsTable({ data, dataVolume }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<{ title: string; data: object | null } | null>(null);
 
@@ -51,6 +52,16 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 <TableHead>OBV</TableHead>
                 <TableHead>ADX</TableHead>
                 <TableHead>Insiders</TableHead>
+                 <TableHead>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-help">Volume</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Ativo com alto volume de negociação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TableHead>
                 <TableHead>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -114,6 +125,8 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                       "dm200_compra": dm200Score,
                       "score_total": score
                   };
+
+                  const hasVolume = !!(dataVolume?.items && indicator.ticker in dataVolume.items);
                   
 
                   return (
@@ -196,6 +209,18 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                           )}
                         </div>
                       </TableCell>
+                       <TableCell
+                        className="cursor-pointer hover:bg-muted"
+                        onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: (dataVolume?.items && dataVolume.items[indicator.ticker]) || { info: "Ticker não encontrado nos dados de volume."} })}
+                       >
+                        <div className="flex items-center">
+                          {hasVolume ? (
+                            <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                          ) : (
+                            <Star className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
                         onClick={() => setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: indicator.data_peaks_valleys })}
@@ -241,7 +266,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={10} className="h-24 text-center">
+                  <TableCell colSpan={11} className="h-24 text-center">
                     <p className="font-medium">Nenhum dado encontrado</p>
                     <p className="text-sm text-muted-foreground">
                       Verifique se sua tabela 'indicators' no Supabase contém dados.

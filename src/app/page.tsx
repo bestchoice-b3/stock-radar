@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase/client';
 import IndicatorsTable from '@/components/indicators-table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
-import type { Indicator } from '@/types/supabase';
+import type { Indicator, DataVolume } from '@/types/supabase';
 
 export const revalidate = 0; // Revalidate data on every request
 
@@ -25,7 +25,7 @@ export default async function Home() {
           </AlertDescription>
         </Alert>
          <div className="w-full max-w-7xl">
-          <IndicatorsTable data={[]} />
+          <IndicatorsTable data={[]} dataVolume={null} />
         </div>
       </main>
     );
@@ -35,9 +35,16 @@ export default async function Home() {
     .from('indicators')
     .select('id,ticker,image_mt5,data_obv,data_adx,data_insiders,data_indicators,data_peaks_valleys')
     .order('id', { ascending: false });
+    
+  const { data: commonData, error: commonError } = await supabase
+    .from('indicators_common')
+    .select('data_volume')
+    .limit(1)
+    .single();
 
   // The Supabase client might return a more generic type, so we cast it here.
   const indicators: Indicator[] = data || [];
+  const dataVolume: DataVolume | null = commonData?.data_volume || null;
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
@@ -58,8 +65,19 @@ export default async function Home() {
         </Alert>
       )}
 
+      {commonError && (
+         <Alert variant="destructive" className="w-full max-w-7xl mb-8">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Erro ao Buscar Dados Comuns</AlertTitle>
+          <AlertDescription>
+            Não foi possível buscar os dados de volume da tabela 'indicators_common'.
+            <pre className="mt-2 text-xs bg-destructive-foreground/10 p-2 rounded-md font-code">{commonError.message}</pre>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="w-full max-w-7xl">
-        <IndicatorsTable data={indicators} />
+        <IndicatorsTable data={indicators} dataVolume={dataVolume} />
       </div>
     </main>
   );
