@@ -206,263 +206,325 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
     <>
       <TooltipProvider>
         <Card>
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-card">
-              <TableRow>
-                <TableHead className="w-[120px]">Ativo</TableHead>
-                <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('dy')} className="p-0 hover:bg-transparent font-medium">
-                        DY {getSortIcon('dy')}
-                    </Button>
-                </TableHead>
-                <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('mLiquida')} className="p-0 hover:bg-transparent font-medium">
-                        M. Liquida {getSortIcon('mLiquida')}
-                    </Button>
-                </TableHead>
-                <TableHead>Upside</TableHead>
-                <TableHead>P/L Médio</TableHead>
-                <TableHead>OBV</TableHead>
-                <TableHead>ADX</TableHead>
-                <TableHead>Insiders</TableHead>
-                 <TableHead>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-help">Volume</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Ativo com alto volume de negociação</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TableHead>
-                <TableHead>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-help">DM200</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>distancia da media de 200</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TableHead>
-                <TableHead>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-help">MF</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Magic Formula</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TableHead>
-                <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('score')} className="p-0 hover:bg-transparent font-medium">
-                        Score {getSortIcon('score')}
-                    </Button>
-                </TableHead>
-                <TableHead className="text-right w-[120px]">Imagem</TableHead>
-                <TableHead className="text-center w-[120px]">Anotações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {processedAndSortedData.length > 0 ? (
-                processedAndSortedData.map((indicator) => {
-                  const { 
-                    insidersQuantidade,
-                    plHistoricoMedia,
-                    pl,
-                    dy,
-                    mLiquida,
-                    signalBuy,
-                    signalSell,
-                    isHighChangeVolume,
-                    volumeData,
-                    isMagicFormula,
-                    magicFormulaData,
-                    score,
-                    scoreBreakdown,
-                    upside,
-                   } = indicator._calculated;
+          <div className="relative w-full overflow-x-auto">
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-card">
+                <TableRow>
+                  <TableHead className="w-[120px]">Ativo</TableHead>
+                  <TableHead>
+                      <Button variant="ghost" onClick={() => handleSort('dy')} className="p-0 hover:bg-transparent font-medium">
+                          DY {getSortIcon('dy')}
+                      </Button>
+                  </TableHead>
+                  <TableHead>
+                      <Button variant="ghost" onClick={() => handleSort('mLiquida')} className="p-0 hover:bg-transparent font-medium">
+                          M. Liquida {getSortIcon('mLiquida')}
+                      </Button>
+                  </TableHead>
+                  <TableHead>Upside</TableHead>
+                  <TableHead>P/L Médio</TableHead>
+                  <TableHead>OBV</TableHead>
+                  <TableHead>ADX</TableHead>
+                  <TableHead>Insiders</TableHead>
+                  <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">Volume</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Ativo com alto volume de negociação</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
+                  <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">DM200</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>distancia da media de 200</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
+                  <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">MF</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Magic Formula</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
+                  <TableHead>
+                      <Button variant="ghost" onClick={() => handleSort('score')} className="p-0 hover:bg-transparent font-medium">
+                          Score {getSortIcon('score')}
+                      </Button>
+                  </TableHead>
+                  <TableHead className="text-right w-[120px]">Imagem</TableHead>
+                  <TableHead className="text-center w-[120px]">Anotações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {processedAndSortedData.length > 0 ? (
+                  processedAndSortedData.map((indicator) => {
+                    const { 
+                      insidersQuantidade,
+                      plHistoricoMedia,
+                      pl,
+                      dy,
+                      mLiquida,
+                      signalBuy,
+                      signalSell,
+                      isHighChangeVolume,
+                      volumeData,
+                      isMagicFormula,
+                      magicFormulaData,
+                      score,
+                      scoreBreakdown,
+                      upside,
+                    } = indicator._calculated;
 
-                  return (
-                    <TableRow key={indicator.id}>
-                      <TableCell 
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Dados Completos: ${indicator.ticker}`, data: indicator })}
-                      >
-                        <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: 'Indicadores Fundamentais (DY)', data: indicator.data_indicators })}
-                      >
-                        {dy != null ? `${dy.toFixed(2)}%` : 'N/A'}
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
-                      >
-                        {mLiquida != null ? `${mLiquida.toFixed(2)}%` : 'N/A'}
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Upside: ${indicator.ticker}`, data: { "price_current": indicator.data_peaks_valleys?.price_current, "max_52_semanas": indicator.data_indicators?.items?.[0]?.max_52_semanas, "calculated_upside_%": upside?.toFixed(2) } })}
-                      >
-                        {upside != null ? `${upside.toFixed(2)}%` : 'N/A'}
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: 'Indicadores Fundamentais (P/L)', data: indicator.data_indicators })}
-                      >
-                        <div className="flex items-center">
-                          {plHistoricoMedia != null && pl != null ? (
-                             plHistoricoMedia > pl ? (
-                              <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                            ) : plHistoricoMedia < pl ? (
-                              <ArrowDown className="h-5 w-5 text-destructive" />
-                            ) : (
-                              <Minus className="h-5 w-5 text-muted-foreground" />
-                            )
+                    return (
+                      <TableRow key={indicator.id}>
+                        <TableCell 
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: `Dados Completos: ${indicator.ticker}`, data: indicator })}
+                        >
+                           <Tooltip>
+                            <TooltipTrigger asChild>
+                               <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Ativo</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (DY)', data: indicator.data_indicators })}
+                        >
+                           <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>{dy != null ? `${dy.toFixed(2)}%` : 'N/A'}</span>
+                            </TooltipTrigger>
+                            <TooltipContent><p>DY</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
+                        >
+                           <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>{mLiquida != null ? `${mLiquida.toFixed(2)}%` : 'N/A'}</span>
+                            </TooltipTrigger>
+                            <TooltipContent><p>M. Liquida</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: `Upside: ${indicator.ticker}`, data: { "price_current": indicator.data_peaks_valleys?.price_current, "max_52_semanas": indicator.data_indicators?.items?.[0]?.max_52_semanas, "calculated_upside_%": upside?.toFixed(2) } })}
+                        >
+                           <Tooltip>
+                            <TooltipTrigger asChild>
+                               <span>{upside != null ? `${upside.toFixed(2)}%` : 'N/A'}</span>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Upside</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (P/L)', data: indicator.data_indicators })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {plHistoricoMedia != null && pl != null ? (
+                                  plHistoricoMedia > pl ? (
+                                    <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                                  ) : plHistoricoMedia < pl ? (
+                                    <ArrowDown className="h-5 w-5 text-destructive" />
+                                  ) : (
+                                    <Minus className="h-5 w-5 text-muted-foreground" />
+                                  )
+                                ) : (
+                                  <Minus className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>P/L Médio vs P/L Atual</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicador OBV', data: indicator.data_obv })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {indicator.data_obv?.trajectory === 'ascendente' ? (
+                                  <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                                ) : indicator.data_obv?.trajectory === 'descendente' ? (
+                                  <ArrowDown className="h-5 w-5 text-destructive" />
+                                ) : (
+                                  <Minus className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Tendência do OBV</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicador ADX', data: indicator.data_adx })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {indicator.data_adx?.values?.plus_di_signal ? (
+                                  <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                                ) : indicator.data_adx?.values?.minus_di_signal ? (
+                                  <ArrowDown className="h-5 w-5 text-destructive" />
+                                ) : (
+                                  <Minus className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Sinal do ADX</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicador Insiders', data: indicator.data_insiders })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {insidersQuantidade > 0 ? (
+                                  <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                                ) : insidersQuantidade < 0 ? (
+                                  <ArrowDown className="h-5 w-5 text-destructive" />
+                                ) : (
+                                  <Minus className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Movimentação de Insiders</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: volumeData || { info: "Ticker não encontrado nos dados de volume."} })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {isHighChangeVolume ? (
+                                  <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                                ) : (
+                                  <Star className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Alto Volume de Negociação</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: indicator.data_peaks_valleys })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {signalBuy === signalSell ? (
+                                  <Minus className="h-5 w-5 text-muted-foreground" />
+                                ) : signalBuy ? (
+                                  <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                                ) : (
+                                  <ArrowDown className="h-5 w-5 text-destructive" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Sinal de Média Móvel 200</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: magicFormulaData || { info: "Ticker não encontrado na Magic Formula." } })}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                {isMagicFormula ? (
+                                  <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                                ) : (
+                                  <Star className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Magic Formula</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer hover:bg-muted"
+                          onClick={() => setJsonData({ title: `Cálculo do Score: ${indicator.ticker}`, data: scoreBreakdown })}
+                        >
+                           <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>{score}</span>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Score Total</p></TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {indicator.image_mt5 ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                if (indicator.image_mt5) {
+                                    setSelectedImage(indicator.image_mt5.startsWith('data:image') ? indicator.image_mt5 : `data:image/png;base64,${indicator.image_mt5}`);
+                                }
+                              }}
+                              aria-label="Ver imagem do gráfico"
+                            >
+                              <ImageIcon className="h-5 w-5 text-accent" />
+                            </Button>
                           ) : (
-                            <Minus className="h-5 w-5 text-muted-foreground" />
+                            <div className="flex justify-end items-center pr-4">
+                              <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="Nenhuma imagem disponível" />
+                            </div>
                           )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: 'Indicador OBV', data: indicator.data_obv })}
-                      >
-                        <div className="flex items-center">
-                          {indicator.data_obv?.trajectory === 'ascendente' ? (
-                            <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                          ) : indicator.data_obv?.trajectory === 'descendente' ? (
-                            <ArrowDown className="h-5 w-5 text-destructive" />
-                          ) : (
-                            <Minus className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                         className="cursor-pointer hover:bg-muted"
-                         onClick={() => setJsonData({ title: 'Indicador ADX', data: indicator.data_adx })}
-                      >
-                        <div className="flex items-center">
-                          {indicator.data_adx?.values?.plus_di_signal ? (
-                            <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                          ) : indicator.data_adx?.values?.minus_di_signal ? (
-                            <ArrowDown className="h-5 w-5 text-destructive" />
-                          ) : (
-                            <Minus className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                         className="cursor-pointer hover:bg-muted"
-                         onClick={() => setJsonData({ title: 'Indicador Insiders', data: indicator.data_insiders })}
-                      >
-                        <div className="flex items-center">
-                          {insidersQuantidade > 0 ? (
-                            <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                          ) : insidersQuantidade < 0 ? (
-                            <ArrowDown className="h-5 w-5 text-destructive" />
-                          ) : (
-                            <Minus className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </TableCell>
-                       <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: volumeData || { info: "Ticker não encontrado nos dados de volume."} })}
-                       >
-                        <div className="flex items-center">
-                          {isHighChangeVolume ? (
-                            <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                          ) : (
-                            <Star className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: indicator.data_peaks_valleys })}
-                      >
-                        <div className="flex items-center">
-                          {signalBuy === signalSell ? (
-                            <Minus className="h-5 w-5 text-muted-foreground" />
-                          ) : signalBuy ? (
-                            <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                          ) : (
-                            <ArrowDown className="h-5 w-5 text-destructive" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: magicFormulaData || { info: "Ticker não encontrado na Magic Formula." } })}
-                      >
-                        <div className="flex items-center">
-                          {isMagicFormula ? (
-                            <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                          ) : (
-                            <Star className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className="cursor-pointer hover:bg-muted"
-                        onClick={() => setJsonData({ title: `Cálculo do Score: ${indicator.ticker}`, data: scoreBreakdown })}
-                      >
-                        {score}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {indicator.image_mt5 ? (
+                        </TableCell>
+                        <TableCell className="text-center">
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => {
-                              if (indicator.image_mt5) {
-                                  setSelectedImage(indicator.image_mt5.startsWith('data:image') ? indicator.image_mt5 : `data:image/png;base64,${indicator.image_mt5}`);
-                              }
-                            }}
-                            aria-label="Ver imagem do gráfico"
+                            onClick={() => setNotesTicker(indicator.ticker)}
+                            aria-label={`Anotações para ${indicator.ticker}`}
                           >
-                            <ImageIcon className="h-5 w-5 text-accent" />
+                            <Notebook className="h-5 w-5 text-accent" />
                           </Button>
-                        ) : (
-                          <div className="flex justify-end items-center pr-4">
-                            <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="Nenhuma imagem disponível" />
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setNotesTicker(indicator.ticker)}
-                          aria-label={`Anotações para ${indicator.ticker}`}
-                        >
-                          <Notebook className="h-5 w-5 text-accent" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={14} className="h-24 text-center">
-                    <p className="font-medium">Nenhum dado encontrado</p>
-                    <p className="text-sm text-muted-foreground">
-                      Verifique se sua tabela 'indicators' no Supabase contém dados.
-                    </p>
-                     <p className="text-sm text-muted-foreground mt-2">
-                      Se houver dados, o problema pode ser a Segurança em Nível de Linha (RLS). 
-                      <a href="https://supabase.com/docs/guides/auth/row-level-security" target="_blank" rel="noopener noreferrer" className="underline text-accent font-medium"> Crie uma política de acesso</a> no Supabase.
-                    </p>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={14} className="h-24 text-center">
+                      <p className="font-medium">Nenhum dado encontrado</p>
+                      <p className="text-sm text-muted-foreground">
+                        Verifique se sua tabela 'indicators' no Supabase contém dados.
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Se houver dados, o problema pode ser a Segurança em Nível de Linha (RLS). 
+                        <a href="https://supabase.com/docs/guides/auth/row-level-security" target="_blank" rel="noopener noreferrer" className="underline text-accent font-medium"> Crie uma política de acesso</a> no Supabase.
+                      </p>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </Card>
       </TooltipProvider>
 
