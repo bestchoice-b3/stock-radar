@@ -16,4 +16,14 @@ export type Indicator = {
       quantidade: number;
     }[];
   } | null;
+  data_indicators: {
+    items: {
+      dy: number | null;
+      pl: number | null;
+      m_liquida: number | null;
+      pl_historico: {
+        media: number | null;
+      } | null;
+    }[];
+  } | null;
 };

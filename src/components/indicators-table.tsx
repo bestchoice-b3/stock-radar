@@ -35,6 +35,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
+              <TableHead>DY</TableHead>
+              <TableHead>P/L</TableHead>
+              <TableHead>M. Liquida</TableHead>
+              <TableHead>P/L Médio</TableHead>
               <TableHead>OBV</TableHead>
               <TableHead>ADX</TableHead>
               <TableHead>Insiders</TableHead>
@@ -56,11 +60,17 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                   (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
                   (insidersQuantidade > 0 ? 1 : 0);
 
+                const indicatorsData = indicator.data_indicators?.items?.[0];
+
                 return (
                   <TableRow key={indicator.id}>
                     <TableCell>
                       <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
                     </TableCell>
+                    <TableCell>{indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}</TableCell>
+                    <TableCell>{indicatorsData?.pl ? indicatorsData.pl.toFixed(2) : 'N/A'}</TableCell>
+                    <TableCell>{indicatorsData?.m_liquida ? indicatorsData.m_liquida.toFixed(2) : 'N/A'}</TableCell>
+                    <TableCell>{indicatorsData?.pl_historico?.media ? indicatorsData.pl_historico.media.toFixed(2) : 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         {indicator.data_obv?.trajectory === 'ascendente' ? (
@@ -100,7 +110,11 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setSelectedImage(indicator.image_mt5)}
+                          onClick={() => {
+                            if (indicator.image_mt5) {
+                                setSelectedImage(indicator.image_mt5.startsWith('data:image') ? indicator.image_mt5 : `data:image/png;base64,${indicator.image_mt5}`);
+                            }
+                          }}
                           aria-label="Ver imagem do gráfico"
                         >
                           <ImageIcon className="h-5 w-5 text-accent" />
@@ -116,7 +130,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
@@ -144,7 +158,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
             {selectedImage && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={selectedImage.startsWith('data:image') ? selectedImage : `data:image/png;base64,${selectedImage}`}
+                src={selectedImage}
                 alt="Gráfico do Indicador"
                 className="rounded-md shadow-lg max-w-full h-auto"
               />
