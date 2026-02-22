@@ -20,6 +20,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import JsonAsTable from "./json-as-table";
 
 type IndicatorsTableProps = {
   data: Indicator[];
@@ -239,16 +240,12 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
       </Dialog>
       
       <Dialog open={!!jsonData} onOpenChange={(open) => !open && setJsonData(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle className="font-headline">Dados Originais: {jsonData?.title}</DialogTitle>
           </DialogHeader>
-          <div className="mt-4 max-h-[60vh] overflow-y-auto rounded-md bg-muted/20 p-4 border">
-            <pre className="text-sm text-foreground whitespace-pre-wrap break-all font-code">
-              <code>
-                {jsonData ? JSON.stringify(jsonData.data, null, 2) : 'Nenhum dado para exibir.'}
-              </code>
-            </pre>
+          <div className="mt-4 max-h-[70vh] overflow-y-auto rounded-md border bg-card">
+            {jsonData ? <JsonAsTable data={jsonData.data} /> : <div className="p-4 text-center">Nenhum dado para exibir.</div>}
           </div>
         </DialogContent>
       </Dialog>
