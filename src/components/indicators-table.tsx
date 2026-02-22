@@ -27,6 +27,8 @@ type IndicatorsTableProps = {
 
 export default function IndicatorsTable({ data }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [jsonData, setJsonData] = useState<{ title: string; data: object | null } | null>(null);
+
 
   return (
     <>
@@ -76,16 +78,42 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                   plScore +
                   dyScore +
                   mLiquidaScore;
+                
+                const scoreBreakdown = {
+                    "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
+                    "adx_positivo": indicator.data_adx?.values?.plus_di_signal ? 1 : 0,
+                    "insiders_compra": insidersQuantidade > 0 ? 1 : 0,
+                    "pl_descontado": plScore,
+                    "dy_alto": dyScore,
+                    "margem_liquida_alta": mLiquidaScore,
+                    "score_total": score
+                };
 
 
                 return (
                   <TableRow key={indicator.id}>
-                    <TableCell>
+                    <TableCell 
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: `Dados Completos: ${indicator.ticker}`, data: indicator })}
+                    >
                       <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
                     </TableCell>
-                    <TableCell>{indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}</TableCell>
-                    <TableCell>{indicatorsData?.m_liquida != null ? `${indicatorsData.m_liquida.toFixed(2)}%` : 'N/A'}</TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: 'Indicadores Fundamentais (DY)', data: indicator.data_indicators })}
+                    >
+                      {indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}
+                    </TableCell>
+                    <TableCell
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
+                    >
+                      {indicatorsData?.m_liquida != null ? `${indicatorsData.m_liquida.toFixed(2)}%` : 'N/A'}
+                    </TableCell>
+                    <TableCell
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: 'Indicadores Fundamentais (P/L)', data: indicator.data_indicators })}
+                    >
                       <div className="flex items-center">
                         {plHistoricoMedia != null && pl != null ? (
                            plHistoricoMedia > pl ? (
@@ -100,7 +128,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: 'Indicador OBV', data: indicator.data_obv })}
+                    >
                       <div className="flex items-center">
                         {indicator.data_obv?.trajectory === 'ascendente' ? (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
@@ -111,7 +142,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                       className="cursor-pointer hover:bg-muted"
+                       onClick={() => setJsonData({ title: 'Indicador ADX', data: indicator.data_adx })}
+                    >
                       <div className="flex items-center">
                         {indicator.data_adx?.values?.plus_di_signal ? (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
@@ -122,7 +156,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                       className="cursor-pointer hover:bg-muted"
+                       onClick={() => setJsonData({ title: 'Indicador Insiders', data: indicator.data_insiders })}
+                    >
                       <div className="flex items-center">
                         {insidersQuantidade > 0 ? (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
@@ -133,7 +170,12 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{score}</TableCell>
+                    <TableCell
+                      className="cursor-pointer hover:bg-muted"
+                      onClick={() => setJsonData({ title: `Cálculo do Score: ${indicator.ticker}`, data: scoreBreakdown })}
+                    >
+                      {score}
+                    </TableCell>
                     <TableCell className="text-right">
                       {indicator.image_mt5 ? (
                         <Button
@@ -192,6 +234,21 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 className="rounded-md shadow-lg max-w-full h-auto"
               />
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={!!jsonData} onOpenChange={(open) => !open && setJsonData(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-headline">Dados Originais: {jsonData?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 max-h-[60vh] overflow-y-auto rounded-md bg-muted/20 p-4 border">
+            <pre className="text-sm text-foreground whitespace-pre-wrap break-all font-code">
+              <code>
+                {jsonData ? JSON.stringify(jsonData.data, null, 2) : 'Nenhum dado para exibir.'}
+              </code>
+            </pre>
           </div>
         </DialogContent>
       </Dialog>
