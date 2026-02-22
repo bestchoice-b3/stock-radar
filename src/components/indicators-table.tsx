@@ -73,7 +73,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
       const volumeScore = isHighChangeVolume ? 1 : 0;
       
-      const isMagicFormula = !!(commonData?.data_magic_formula?.items && indicator.ticker in commonData.data_magic_formula.items);
+      const isMagicFormula = !!(commonData?.data_magic_formula?.items && Object.prototype.hasOwnProperty.call(commonData.data_magic_formula.items, indicator.ticker));
       const magicFormulaData = commonData?.data_magic_formula?.items?.[indicator.ticker];
       const magicFormulaScore = isMagicFormula ? 1 : 0;
 
@@ -426,7 +426,31 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: volumeData || { info: "Ticker não encontrado nos dados de volume."} })}
+                          onClick={() => {
+                            if (volumeData) {
+                                const {
+                                    volume_change,
+                                    change,
+                                    recommendation_mark,
+                                    average_volume_30d,
+                                    average_volume_10d,
+                                    volume
+                                } = volumeData;
+                                
+                                const filteredData = {
+                                    volume_change,
+                                    change,
+                                    recommendation_mark,
+                                    average_volume_30d,
+                                    average_volume_10d,
+                                    volume
+                                };
+
+                                setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: filteredData });
+                            } else {
+                                setJsonData({ title: `Dados de Volume: ${indicator.ticker}`, data: { info: "Ticker não encontrado nos dados de volume."} });
+                            }
+                          }}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>

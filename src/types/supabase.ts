@@ -46,9 +46,15 @@ export type IndicatorsCommonData = {
         site: string;
         tipo: string;
         close: number;
-        change: number;
         source: string;
         ticker: string;
+        // fields from user request
+        change: number;
+        volume_change?: number;
+        recommendation_mark?: string;
+        average_volume_30d?: number;
+        average_volume_10d?: number;
+        volume?: number;
       };
     };
   } | null;
