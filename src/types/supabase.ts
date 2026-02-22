@@ -24,11 +24,13 @@ export type Indicator = {
       pl_historico: {
         media: number | null;
       } | null;
+      max_52_semanas: number | null;
     }[];
   } | null;
   data_peaks_valleys: {
     signal_sell: boolean;
     signal_buy: boolean;
+    price_current: number | null;
   } | null;
 };
 

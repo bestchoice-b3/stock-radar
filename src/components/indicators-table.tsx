@@ -99,6 +99,14 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           "score_total": score
       };
 
+      const priceCurrent = indicator.data_peaks_valleys?.price_current;
+      const max52Semanas = indicatorsData?.max_52_semanas;
+      let upside: number | null = null;
+
+      if (priceCurrent != null && max52Semanas != null && priceCurrent > 0) {
+        upside = ((max52Semanas - priceCurrent) / priceCurrent) * 100;
+      }
+
       return {
         ...indicator,
         _calculated: {
@@ -116,6 +124,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           magicFormulaData,
           score,
           scoreBreakdown,
+          upside,
         },
       };
     });
@@ -201,6 +210,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         M. Liquida {getSortIcon('mLiquida')}
                     </Button>
                 </TableHead>
+                <TableHead>Upside</TableHead>
                 <TableHead>P/L Médio</TableHead>
                 <TableHead>OBV</TableHead>
                 <TableHead>ADX</TableHead>
@@ -260,6 +270,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                     magicFormulaData,
                     score,
                     scoreBreakdown,
+                    upside,
                    } = indicator._calculated;
 
                   return (
@@ -281,6 +292,12 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
                       >
                         {mLiquida != null ? `${mLiquida.toFixed(2)}%` : 'N/A'}
+                      </TableCell>
+                      <TableCell
+                        className="cursor-pointer hover:bg-muted"
+                        onClick={() => setJsonData({ title: `Upside: ${indicator.ticker}`, data: { "price_current": indicator.data_peaks_valleys?.price_current, "max_52_semanas": indicator.data_indicators?.items?.[0]?.max_52_semanas, "calculated_upside_%": upside?.toFixed(2) } })}
+                      >
+                        {upside != null ? `${upside.toFixed(2)}%` : 'N/A'}
                       </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
@@ -411,7 +428,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={12} className="h-24 text-center">
+                  <TableCell colSpan={13} className="h-24 text-center">
                     <p className="font-medium">Nenhum dado encontrado</p>
                     <p className="text-sm text-muted-foreground">
                       Verifique se sua tabela 'indicators' no Supabase contém dados.
