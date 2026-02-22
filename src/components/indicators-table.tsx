@@ -36,47 +36,52 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
               <TableHead>OBV</TableHead>
+              <TableHead>Score</TableHead>
               <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.length > 0 ? (
-              data.map((indicator) => (
-                <TableRow key={indicator.id}>
-                  <TableCell>
-                    <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      {indicator.data_obv?.trajectory === 'ascendente' && (
-                        <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                      )}
-                      {indicator.data_obv?.trajectory === 'descendente' && (
-                        <ArrowDown className="h-5 w-5 text-destructive" />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {indicator.image_mt5 ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setSelectedImage(indicator.image_mt5)}
-                        aria-label="Ver imagem do gráfico"
-                      >
-                        <ImageIcon className="h-5 w-5 text-accent" />
-                      </Button>
-                    ) : (
-                      <div className="flex justify-end items-center pr-4">
-                        <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="Nenhuma imagem disponível" />
+              data.map((indicator) => {
+                const score = indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0;
+                return (
+                  <TableRow key={indicator.id}>
+                    <TableCell>
+                      <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        {indicator.data_obv?.trajectory === 'ascendente' && (
+                          <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                        )}
+                        {indicator.data_obv?.trajectory === 'descendente' && (
+                          <ArrowDown className="h-5 w-5 text-destructive" />
+                        )}
                       </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                    <TableCell>{score}</TableCell>
+                    <TableCell className="text-right">
+                      {indicator.image_mt5 ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedImage(indicator.image_mt5)}
+                          aria-label="Ver imagem do gráfico"
+                        >
+                          <ImageIcon className="h-5 w-5 text-accent" />
+                        </Button>
+                      ) : (
+                        <div className="flex justify-end items-center pr-4">
+                          <ImageOff className="h-5 w-5 text-muted-foreground" aria-label="Nenhuma imagem disponível" />
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
+                <TableCell colSpan={4} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
