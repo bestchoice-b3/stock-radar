@@ -19,6 +19,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 type NotesModalProps = {
   ticker: string | null;
@@ -26,42 +29,43 @@ type NotesModalProps = {
   onClose: () => void;
 };
 
-const USER_ID_KEY = "supabase_user_cpf";
+const USER_ID_KEY = "supabase_user_email";
 
 export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [tempCpf, setTempCpf] = useState("");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [tempEmail, setTempEmail] = useState("");
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
+  const [importance, setImportance] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for user ID in localStorage when modal is opened
     if (isOpen) {
-      const storedUserId = localStorage.getItem(USER_ID_KEY);
-      if (storedUserId) {
-        setUserId(storedUserId);
+      const storedUserEmail = localStorage.getItem(USER_ID_KEY);
+      if (storedUserEmail) {
+        setUserEmail(storedUserEmail);
       } else {
-        // Reset state when modal opens for a new ticker without a stored user ID
         setNotes([]);
         setError(null);
-        setIsLoading(false); // No user ID, stop loading and show CPF form
+        setIsLoading(false);
       }
+    } else {
+        setNewNote("");
+        setImportance(0);
     }
   }, [isOpen]);
 
   useEffect(() => {
-    // Fetch notes when userId and ticker are available and modal is open
-    if (userId && ticker && isOpen) {
+    if (userEmail && ticker && isOpen) {
       fetchNotes();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, ticker, isOpen]);
+  }, [userEmail, ticker, isOpen]);
 
   async function fetchNotes() {
-    if (!ticker || !userId) return;
+    if (!ticker || !userEmail) return;
 
     setIsLoading(true);
     setError(null);
@@ -70,7 +74,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
       .from("notes")
       .select("*")
       .eq("ticker", ticker)
-      .eq("user_id", userId)
+      .eq("user_id", userEmail)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -82,24 +86,24 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
     setIsLoading(false);
   }
 
-  const handleCpfSubmit = (e: FormEvent) => {
+  const handleEmailSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (tempCpf.trim()) {
-      const formattedCpf = tempCpf.trim();
-      localStorage.setItem(USER_ID_KEY, formattedCpf);
-      setUserId(formattedCpf);
+    if (tempEmail.trim()) {
+      const formattedEmail = tempEmail.trim();
+      localStorage.setItem(USER_ID_KEY, formattedEmail);
+      setUserEmail(formattedEmail);
     }
   };
 
   const handleSaveNote = async () => {
-    if (!newNote.trim() || !ticker || !userId) return;
+    if (!newNote.trim() || !ticker || !userEmail) return;
 
     setIsSaving(true);
     setError(null);
 
     const { data: newNoteData, error: insertError } = await supabase
       .from("notes")
-      .insert([{ comment: newNote, ticker: ticker, user_id: userId }])
+      .insert([{ comment: newNote, ticker: ticker, user_id: userEmail, importance: importance }])
       .select()
       .single();
 
@@ -109,6 +113,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
     } else if (newNoteData) {
       setNotes([newNoteData, ...notes]);
       setNewNote("");
+      setImportance(0);
     }
     setIsSaving(false);
   };
@@ -117,28 +122,35 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
     return null;
   }
 
+  const importanceClasses = {
+    0: "", // Normal
+    1: "bg-yellow-50 dark:bg-yellow-950/50 border-yellow-200 dark:border-yellow-800/30", // Alerta
+    2: "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800/30", // Urgente
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-headline">Anotações para {ticker}</DialogTitle>
-          {!userId && (
+          {!userEmail && (
             <DialogDescription>
-              Para salvar e ver suas anotações, por favor, informe seu CPF. Ele será salvo localmente para futuras visitas.
+              Para salvar e ver suas anotações, por favor, informe seu e-mail. Ele será salvo localmente para futuras visitas.
             </DialogDescription>
           )}
         </DialogHeader>
 
-        {!userId ? (
-          <form onSubmit={handleCpfSubmit} className="grid gap-4 py-4">
+        {!userEmail ? (
+          <form onSubmit={handleEmailSubmit} className="grid gap-4 py-4">
             <Input
-              id="cpf"
-              placeholder="Digite seu CPF"
-              value={tempCpf}
-              onChange={(e) => setTempCpf(e.target.value)}
+              id="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              value={tempEmail}
+              onChange={(e) => setTempEmail(e.target.value)}
               required
             />
-            <Button type="submit">Salvar CPF e Continuar</Button>
+            <Button type="submit">Salvar E-mail e Continuar</Button>
           </form>
         ) : (
           <>
@@ -148,7 +160,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
               </Alert>
             )}
             <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
+              <div className="grid gap-4">
                 <Textarea
                   placeholder="Digite sua anotação aqui..."
                   value={newNote}
@@ -156,6 +168,30 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
                   rows={3}
                   disabled={isSaving}
                 />
+                
+                <div className="space-y-2">
+                    <Label>Importância</Label>
+                    <RadioGroup 
+                        value={String(importance)} 
+                        onValueChange={(value) => setImportance(Number(value))}
+                        className="flex items-center space-x-4"
+                        disabled={isSaving}
+                    >
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="0" id="r-normal" />
+                            <Label htmlFor="r-normal" className="font-normal">Normal</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="1" id="r-alerta" />
+                            <Label htmlFor="r-alerta" className="font-normal">Alerta</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="2" id="r-urgente" />
+                            <Label htmlFor="r-urgente" className="font-normal">Urgente</Label>
+                        </div>
+                    </RadioGroup>
+                </div>
+
                 <Button onClick={handleSaveNote} disabled={!newNote.trim() || isSaving}>
                   {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Salvar Anotação
@@ -172,7 +208,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
                 ) : notes.length > 0 ? (
                   <div className="space-y-4">
                     {notes.map((note) => (
-                      <Card key={note.id}>
+                      <Card key={note.id} className={cn(importanceClasses[note.importance as keyof typeof importanceClasses])}>
                         <CardContent className="pt-6">
                           <p className="text-sm whitespace-pre-wrap">{note.comment}</p>
                         </CardContent>

@@ -70,4 +70,5 @@ export type Note = {
   ticker: string;
   comment: string;
   user_id: string;
+  importance: number;
 };
