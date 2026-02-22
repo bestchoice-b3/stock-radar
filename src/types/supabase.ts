@@ -11,4 +11,9 @@ export type Indicator = {
       minus_di_signal: boolean;
     };
   } | null;
+  data_insiders: {
+    items: {
+      quantidade: number;
+    }[];
+  } | null;
 };

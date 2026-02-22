@@ -37,6 +37,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               <TableHead className="w-[120px]">Ativo</TableHead>
               <TableHead>OBV</TableHead>
               <TableHead>ADX</TableHead>
+              <TableHead>Insiders</TableHead>
               <TableHead>Score</TableHead>
               <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
@@ -47,6 +48,13 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                 const score =
                   (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
                   (indicator.data_adx?.values?.plus_di_signal ? 1 : 0);
+
+                const insidersQuantidade =
+                  indicator.data_insiders?.items?.reduce(
+                    (acc, item) => acc + item.quantidade,
+                    0
+                  ) ?? 0;
+
                 return (
                   <TableRow key={indicator.id}>
                     <TableCell>
@@ -74,6 +82,9 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                         )}
                       </div>
                     </TableCell>
+                    <TableCell>
+                      {new Intl.NumberFormat('pt-BR').format(insidersQuantidade)}
+                    </TableCell>
                     <TableCell>{score}</TableCell>
                     <TableCell className="text-right">
                       {indicator.image_mt5 ? (
@@ -96,7 +107,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
