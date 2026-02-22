@@ -75,6 +75,20 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       const magicFormulaData = commonData?.data_magic_formula?.items?.[indicator.ticker];
       const magicFormulaScore = isMagicFormula ? 1 : 0;
 
+      const priceCurrent = indicator.data_peaks_valleys?.price_current;
+      const max52Semanas = indicatorsData?.max_52_semanas;
+      let upside: number | null = null;
+      let upsideScore = 0;
+
+      if (priceCurrent != null && max52Semanas != null && priceCurrent > 0) {
+        upside = ((max52Semanas - priceCurrent) / priceCurrent) * 100;
+        if (upside > 25) {
+          upsideScore = 2;
+        } else if (upside > 20) {
+          upsideScore = 1;
+        }
+      }
+
       const score =
         (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
         (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
@@ -84,7 +98,8 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
         mLiquidaScore + 
         dm200Score +
         volumeScore +
-        magicFormulaScore;
+        magicFormulaScore +
+        upsideScore;
       
       const scoreBreakdown = {
           "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
@@ -96,16 +111,9 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           "dm200_compra": dm200Score,
           "volume_change_positivo": volumeScore,
           "magic_formula": magicFormulaScore,
+          "upside_potencial": upsideScore,
           "score_total": score
       };
-
-      const priceCurrent = indicator.data_peaks_valleys?.price_current;
-      const max52Semanas = indicatorsData?.max_52_semanas;
-      let upside: number | null = null;
-
-      if (priceCurrent != null && max52Semanas != null && priceCurrent > 0) {
-        upside = ((max52Semanas - priceCurrent) / priceCurrent) * 100;
-      }
 
       return {
         ...indicator,
