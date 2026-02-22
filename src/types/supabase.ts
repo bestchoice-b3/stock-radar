@@ -17,6 +17,7 @@ export type Indicator = {
     }[];
   } | null;
   data_indicators: {
+    generated_at?: string;
     items: {
       dy: number | null;
       pl: number | null;

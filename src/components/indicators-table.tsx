@@ -300,7 +300,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (DY)', data: indicator.data_indicators })}
+                          onClick={() => setJsonData({ title: `Data de Geração (DY)`, data: { generated_at: indicator.data_indicators?.generated_at ?? "Não disponível" } })}
                         >
                            <Tooltip>
                             <TooltipTrigger asChild>
@@ -311,7 +311,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
+                          onClick={() => setJsonData({ title: `Data de Geração (M. Liquida)`, data: { generated_at: indicator.data_indicators?.generated_at ?? "Não disponível" } })}
                         >
                            <Tooltip>
                             <TooltipTrigger asChild>
