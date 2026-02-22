@@ -207,7 +207,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       <TooltipProvider>
         <Card>
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-10 bg-card">
               <TableRow>
                 <TableHead className="w-[120px]">Ativo</TableHead>
                 <TableHead>
