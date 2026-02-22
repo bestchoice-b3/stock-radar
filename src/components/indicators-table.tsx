@@ -45,15 +45,16 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
           <TableBody>
             {data.length > 0 ? (
               data.map((indicator) => {
-                const score =
-                  (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
-                  (indicator.data_adx?.values?.plus_di_signal ? 1 : 0);
-
                 const insidersQuantidade =
                   indicator.data_insiders?.items?.reduce(
                     (acc, item) => acc + item.quantidade,
                     0
                   ) ?? 0;
+
+                const score =
+                  (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
+                  (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
+                  (insidersQuantidade > 0 ? 1 : 0);
 
                 return (
                   <TableRow key={indicator.id}>
@@ -83,7 +84,15 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {new Intl.NumberFormat('pt-BR').format(insidersQuantidade)}
+                      <div className="flex items-center">
+                        {insidersQuantidade > 0 ? (
+                          <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                        ) : insidersQuantidade < 0 ? (
+                          <ArrowDown className="h-5 w-5 text-destructive" />
+                        ) : (
+                          <Minus className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>{score}</TableCell>
                     <TableCell className="text-right">
