@@ -36,7 +36,6 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
               <TableHead>DY</TableHead>
-              <TableHead>P/L</TableHead>
               <TableHead>M. Liquida</TableHead>
               <TableHead>P/L Médio</TableHead>
               <TableHead>OBV</TableHead>
@@ -85,7 +84,6 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                       <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
                     </TableCell>
                     <TableCell>{indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}</TableCell>
-                    <TableCell>{pl != null ? pl.toFixed(2) : 'N/A'}</TableCell>
                     <TableCell>{indicatorsData?.m_liquida != null ? `${indicatorsData.m_liquida.toFixed(2)}%` : 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
@@ -161,7 +159,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
+                <TableCell colSpan={9} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
