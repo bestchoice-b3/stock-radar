@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Indicator, IndicatorsCommonData } from "@/types/supabase";
 import {
   Table,
@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import JsonAsTable from "./json-as-table";
 import {
@@ -33,9 +33,154 @@ type IndicatorsTableProps = {
   commonData: IndicatorsCommonData | null;
 };
 
+type SortKey = 'dy' | 'mLiquida' | 'score';
+type SortDirection = 'asc' | 'desc';
+
 export default function IndicatorsTable({ data, commonData }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [jsonData, setJsonData] = useState<{ title: string; data: object | null } | null>(null);
+  const [jsonData, setJsonData] = useState<{ title: string; data: object | null | any[] } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }[]>([]);
+
+  const processedAndSortedData = useMemo(() => {
+    const processedData = data.map((indicator) => {
+      const insidersQuantidade =
+        indicator.data_insiders?.items?.reduce(
+          (acc, item) => acc + item.quantidade,
+          0
+        ) ?? 0;
+
+      const indicatorsData = indicator.data_indicators?.items?.[0];
+      
+      const plHistoricoMedia = indicatorsData?.pl_historico?.media;
+      const pl = indicatorsData?.pl;
+      const dy = indicatorsData?.dy;
+      const mLiquida = indicatorsData?.m_liquida;
+
+      const plScore =
+        plHistoricoMedia != null && pl != null && plHistoricoMedia > pl ? 1 : 0;
+      
+      const dyScore = dy != null && dy > 6 ? 1 : 0;
+      const mLiquidaScore = mLiquida != null && mLiquida > 10 ? 1 : 0;
+
+      const peaksValleysData = indicator.data_peaks_valleys;
+      const signalBuy = peaksValleysData?.signal_buy;
+
+      const dm200Score = signalBuy ? 2 : 0;
+
+      const volumeData = commonData?.data_volume?.items?.[indicator.ticker];
+      const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
+      const volumeScore = isHighChangeVolume ? 1 : 0;
+      
+      const isMagicFormula = !!(commonData?.data_magic_formula?.items && indicator.ticker in commonData.data_magic_formula.items);
+      const magicFormulaData = commonData?.data_magic_formula?.items?.[indicator.ticker];
+      const magicFormulaScore = isMagicFormula ? 1 : 0;
+
+      const score =
+        (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
+        (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
+        (insidersQuantidade > 0 ? 1 : 0) +
+        plScore +
+        dyScore +
+        mLiquidaScore + 
+        dm200Score +
+        volumeScore +
+        magicFormulaScore;
+      
+      const scoreBreakdown = {
+          "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
+          "adx_positivo": indicator.data_adx?.values?.plus_di_signal ? 1 : 0,
+          "insiders_compra": insidersQuantidade > 0 ? 1 : 0,
+          "pl_descontado": plScore,
+          "dy_alto": dyScore,
+          "margem_liquida_alta": mLiquidaScore,
+          "dm200_compra": dm200Score,
+          "volume_change_positivo": volumeScore,
+          "magic_formula": magicFormulaScore,
+          "score_total": score
+      };
+
+      return {
+        ...indicator,
+        _calculated: {
+          insidersQuantidade,
+          indicatorsData,
+          plHistoricoMedia,
+          pl,
+          dy,
+          mLiquida,
+          signalBuy,
+          signalSell: peaksValleysData?.signal_sell,
+          isHighChangeVolume,
+          volumeData,
+          isMagicFormula,
+          magicFormulaData,
+          score,
+          scoreBreakdown,
+        },
+      };
+    });
+
+    if (sortConfig.length === 0) {
+      return processedData;
+    }
+
+    return [...processedData].sort((a, b) => {
+      for (const { key, direction } of sortConfig) {
+        let valA, valB;
+        switch (key) {
+          case 'score':
+            valA = a._calculated.score;
+            valB = b._calculated.score;
+            break;
+          case 'dy':
+            valA = a._calculated.dy ?? -1;
+            valB = b._calculated.dy ?? -1;
+            break;
+          case 'mLiquida':
+            valA = a._calculated.mLiquida ?? -1;
+            valB = b._calculated.mLiquida ?? -1;
+            break;
+          default:
+            continue;
+        }
+
+        if (valA < valB) return direction === 'asc' ? -1 : 1;
+        if (valA > valB) return direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [data, commonData, sortConfig]);
+
+  const handleSort = (key: SortKey) => {
+    setSortConfig(prevConfig => {
+        const newConfig = [...prevConfig];
+        const existingIndex = newConfig.findIndex(item => item.key === key);
+
+        if (existingIndex !== -1) {
+            // Key exists, toggle direction from desc -> asc, or remove if asc
+            if (newConfig[existingIndex].direction === 'desc') {
+                newConfig[existingIndex].direction = 'asc';
+            } else {
+                newConfig.splice(existingIndex, 1);
+            }
+        } else {
+            // Key doesn't exist, add it with desc
+            newConfig.push({ key, direction: 'desc' });
+        }
+        return newConfig;
+    });
+  };
+
+  const getSortIcon = (key: SortKey) => {
+    const config = sortConfig.find(item => item.key === key);
+    if (!config) {
+        return <ArrowUpDown className="h-4 w-4 ml-1 text-muted-foreground/70" />;
+    }
+    if (config.direction === 'desc') {
+        return <ArrowDown className="h-4 w-4 ml-1" />;
+    }
+    return <ArrowUp className="h-4 w-4 ml-1" />;
+  };
 
 
   return (
@@ -46,8 +191,16 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[120px]">Ativo</TableHead>
-                <TableHead>DY</TableHead>
-                <TableHead>M. Liquida</TableHead>
+                <TableHead>
+                    <Button variant="ghost" onClick={() => handleSort('dy')} className="p-0 hover:bg-transparent font-medium">
+                        DY {getSortIcon('dy')}
+                    </Button>
+                </TableHead>
+                <TableHead>
+                    <Button variant="ghost" onClick={() => handleSort('mLiquida')} className="p-0 hover:bg-transparent font-medium">
+                        M. Liquida {getSortIcon('mLiquida')}
+                    </Button>
+                </TableHead>
                 <TableHead>P/L Médio</TableHead>
                 <TableHead>OBV</TableHead>
                 <TableHead>ADX</TableHead>
@@ -82,72 +235,32 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                     </TooltipContent>
                   </Tooltip>
                 </TableHead>
-                <TableHead>Score</TableHead>
+                <TableHead>
+                    <Button variant="ghost" onClick={() => handleSort('score')} className="p-0 hover:bg-transparent font-medium">
+                        Score {getSortIcon('score')}
+                    </Button>
+                </TableHead>
                 <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.length > 0 ? (
-                data.map((indicator) => {
-                  const insidersQuantidade =
-                    indicator.data_insiders?.items?.reduce(
-                      (acc, item) => acc + item.quantidade,
-                      0
-                    ) ?? 0;
-
-                  const indicatorsData = indicator.data_indicators?.items?.[0];
-                  
-                  const plHistoricoMedia = indicatorsData?.pl_historico?.media;
-                  const pl = indicatorsData?.pl;
-                  const dy = indicatorsData?.dy;
-                  const mLiquida = indicatorsData?.m_liquida;
-
-
-                  const plScore =
-                    plHistoricoMedia != null && pl != null && plHistoricoMedia > pl ? 1 : 0;
-                  
-                  const dyScore = dy != null && dy > 6 ? 1 : 0;
-
-                  const mLiquidaScore = mLiquida != null && mLiquida > 10 ? 1 : 0;
-
-                  const peaksValleysData = indicator.data_peaks_valleys;
-                  const signalBuy = peaksValleysData?.signal_buy;
-                  const signalSell = peaksValleysData?.signal_sell;
-
-                  const dm200Score = signalBuy ? 2 : 0;
-
-                  const volumeData = commonData?.data_volume?.items?.[indicator.ticker];
-                  const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
-                  const volumeScore = isHighChangeVolume ? 1 : 0;
-
-                  const isMagicFormula = !!(commonData?.data_magic_formula?.items && indicator.ticker in commonData.data_magic_formula.items);
-                  const magicFormulaScore = isMagicFormula ? 1 : 0;
-                  const magicFormulaData = commonData?.data_magic_formula?.items?.[indicator.ticker];
-
-                  const score =
-                    (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
-                    (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
-                    (insidersQuantidade > 0 ? 1 : 0) +
-                    plScore +
-                    dyScore +
-                    mLiquidaScore + 
-                    dm200Score +
-                    volumeScore +
-                    magicFormulaScore;
-                  
-                  const scoreBreakdown = {
-                      "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
-                      "adx_positivo": indicator.data_adx?.values?.plus_di_signal ? 1 : 0,
-                      "insiders_compra": insidersQuantidade > 0 ? 1 : 0,
-                      "pl_descontado": plScore,
-                      "dy_alto": dyScore,
-                      "margem_liquida_alta": mLiquidaScore,
-                      "dm200_compra": dm200Score,
-                      "volume_change_positivo": volumeScore,
-                      "magic_formula": magicFormulaScore,
-                      "score_total": score
-                  };
-                  
+              {processedAndSortedData.length > 0 ? (
+                processedAndSortedData.map((indicator) => {
+                  const { 
+                    insidersQuantidade,
+                    plHistoricoMedia,
+                    pl,
+                    dy,
+                    mLiquida,
+                    signalBuy,
+                    signalSell,
+                    isHighChangeVolume,
+                    volumeData,
+                    isMagicFormula,
+                    magicFormulaData,
+                    score,
+                    scoreBreakdown,
+                   } = indicator._calculated;
 
                   return (
                     <TableRow key={indicator.id}>
@@ -161,13 +274,13 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         className="cursor-pointer hover:bg-muted"
                         onClick={() => setJsonData({ title: 'Indicadores Fundamentais (DY)', data: indicator.data_indicators })}
                       >
-                        {indicatorsData?.dy ? `${indicatorsData.dy.toFixed(2)}%` : 'N/A'}
+                        {dy != null ? `${dy.toFixed(2)}%` : 'N/A'}
                       </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
                         onClick={() => setJsonData({ title: 'Indicadores Fundamentais (M. Liquida)', data: indicator.data_indicators })}
                       >
-                        {indicatorsData?.m_liquida != null ? `${indicatorsData.m_liquida.toFixed(2)}%` : 'N/A'}
+                        {mLiquida != null ? `${mLiquida.toFixed(2)}%` : 'N/A'}
                       </TableCell>
                       <TableCell
                         className="cursor-pointer hover:bg-muted"
