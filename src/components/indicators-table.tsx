@@ -467,7 +467,14 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: indicator.data_peaks_valleys })}
+                          onClick={() => {
+                              if (indicator.data_peaks_valleys) {
+                                  const { params, timeframe, ...filteredData } = indicator.data_peaks_valleys;
+                                  setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: filteredData });
+                              } else {
+                                  setJsonData({ title: 'Indicador DM200 (Picos e Vales)', data: { info: "Nenhum dado encontrado." } });
+                              }
+                          }}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -486,7 +493,14 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: magicFormulaData || { info: "Ticker não encontrado na Magic Formula." } })}
+                          onClick={() => {
+                            if (magicFormulaData) {
+                                const { posicao_ranking, classificacao } = magicFormulaData;
+                                setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: { posicao_ranking, classificacao } });
+                            } else {
+                                setJsonData({ title: `Dados Magic Formula: ${indicator.ticker}`, data: { info: "Ticker não encontrado na Magic Formula." } });
+                            }
+                          }}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>

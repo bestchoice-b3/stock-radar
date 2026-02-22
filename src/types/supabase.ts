@@ -36,6 +36,8 @@ export type Indicator = {
     signal_sell: boolean;
     signal_buy: boolean;
     price_current: number | null;
+    params?: any;
+    timeframe?: string;
   } | null;
 };
 
@@ -70,6 +72,8 @@ export type IndicatorsCommonData = {
         symbol: string;
         ticker: string;
         ev_ebit: number;
+        posicao_ranking?: number;
+        classificacao?: string;
       };
     };
   } | null;
