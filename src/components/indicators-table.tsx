@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type IndicatorsTableProps = {
@@ -52,21 +52,23 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        {indicator.data_obv?.trajectory === 'ascendente' && (
+                        {indicator.data_obv?.trajectory === 'ascendente' ? (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                        )}
-                        {indicator.data_obv?.trajectory === 'descendente' && (
+                        ) : indicator.data_obv?.trajectory === 'descendente' ? (
                           <ArrowDown className="h-5 w-5 text-destructive" />
+                        ) : (
+                          <Minus className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        {indicator.data_adx?.values?.plus_di_signal && (
+                        {indicator.data_adx?.values?.plus_di_signal ? (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                        )}
-                        {indicator.data_adx?.values?.minus_di_signal && (
+                        ) : indicator.data_adx?.values?.minus_di_signal ? (
                           <ArrowDown className="h-5 w-5 text-destructive" />
+                        ) : (
+                          <Minus className="h-5 w-5 text-muted-foreground" />
                         )}
                       </div>
                     </TableCell>
