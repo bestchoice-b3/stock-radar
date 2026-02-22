@@ -36,6 +36,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
             <TableRow>
               <TableHead className="w-[120px]">Ativo</TableHead>
               <TableHead>OBV</TableHead>
+              <TableHead>ADX</TableHead>
               <TableHead>Score</TableHead>
               <TableHead className="text-right w-[120px]">Imagem do Gráfico</TableHead>
             </TableRow>
@@ -55,6 +56,16 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
                         )}
                         {indicator.data_obv?.trajectory === 'descendente' && (
+                          <ArrowDown className="h-5 w-5 text-destructive" />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        {indicator.data_adx?.plus_di_signal && (
+                          <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
+                        )}
+                        {indicator.data_adx?.minus_di_signal && (
                           <ArrowDown className="h-5 w-5 text-destructive" />
                         )}
                       </div>
@@ -81,7 +92,7 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   <p className="font-medium">Nenhum dado encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     Verifique se sua tabela 'indicators' no Supabase contém dados.
