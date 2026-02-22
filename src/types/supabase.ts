@@ -6,7 +6,9 @@ export type Indicator = {
     trajectory: 'ascendente' | 'descendente';
   } | null;
   data_adx: {
-    plus_di_signal: boolean;
-    minus_di_signal: boolean;
+    values: {
+      plus_di_signal: boolean;
+      minus_di_signal: boolean;
+    };
   } | null;
 };

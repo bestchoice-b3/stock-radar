@@ -62,10 +62,10 @@ export default function IndicatorsTable({ data }: IndicatorsTableProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center">
-                        {indicator.data_adx?.plus_di_signal && (
+                        {indicator.data_adx?.values?.plus_di_signal && (
                           <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
                         )}
-                        {indicator.data_adx?.minus_di_signal && (
+                        {indicator.data_adx?.values?.minus_di_signal && (
                           <ArrowDown className="h-5 w-5 text-destructive" />
                         )}
                       </div>
