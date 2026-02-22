@@ -333,7 +333,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                           className="cursor-pointer hover:bg-muted"
-                          onClick={() => setJsonData({ title: 'Indicadores Fundamentais (P/L)', data: indicator.data_indicators })}
+                          onClick={() => setJsonData({ title: 'Dados de P/L Médio', data: { pl_historico: indicator.data_indicators?.items?.[0]?.pl_historico, generated_at: indicator.data_indicators?.generated_at ?? "Não disponível" } })}
                         >
                           <Tooltip>
                             <TooltipTrigger asChild>
