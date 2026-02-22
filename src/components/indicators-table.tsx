@@ -34,7 +34,7 @@ type IndicatorsTableProps = {
   commonData: IndicatorsCommonData | null;
 };
 
-type SortKey = 'dy' | 'mLiquida' | 'score';
+type SortKey = 'dy' | 'mLiquida' | 'score' | 'upside';
 type SortDirection = 'asc' | 'desc';
 
 export default function IndicatorsTable({ data, commonData }: IndicatorsTableProps) {
@@ -159,6 +159,10 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
             valA = a._calculated.mLiquida ?? -1;
             valB = b._calculated.mLiquida ?? -1;
             break;
+          case 'upside':
+            valA = a._calculated.upside ?? -Infinity;
+            valB = b._calculated.upside ?? -Infinity;
+            break;
           default:
             continue;
         }
@@ -221,7 +225,11 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                           M. Liquida {getSortIcon('mLiquida')}
                       </Button>
                   </TableHead>
-                  <TableHead>Upside</TableHead>
+                  <TableHead>
+                    <Button variant="ghost" onClick={() => handleSort('upside')} className="p-0 hover:bg-transparent font-medium">
+                        Upside {getSortIcon('upside')}
+                    </Button>
+                  </TableHead>
                   <TableHead>P/L Médio</TableHead>
                   <TableHead>OBV</TableHead>
                   <TableHead>ADX</TableHead>
