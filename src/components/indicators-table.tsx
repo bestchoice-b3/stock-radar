@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown, Notebook } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown, Notebook, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import JsonAsTable from "./json-as-table";
 import {
@@ -28,6 +28,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import NotesModal from "./notes-modal";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuLabel, 
+  DropdownMenuRadioGroup, 
+  DropdownMenuRadioItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "./ui/dropdown-menu";
 
 type IndicatorsTableProps = {
   data: Indicator[];
@@ -37,13 +46,24 @@ type IndicatorsTableProps = {
 type SortKey = 'dy' | 'mLiquida' | 'score' | 'upside';
 type SortDirection = 'asc' | 'desc';
 
+type ArrowFilter = 'all' | 'up' | 'down';
+type ArrowFilterKeys = 'pl' | 'obv' | 'adx' | 'insiders' | 'dm200';
+
 export default function IndicatorsTable({ data, commonData }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<{ title: string; data: object | null | any[] } | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }[]>([]);
   const [notesTicker, setNotesTicker] = useState<string | null>(null);
+  const [arrowFilters, setArrowFilters] = useState<Record<ArrowFilterKeys, ArrowFilter>>({
+    pl: 'all',
+    obv: 'all',
+    adx: 'all',
+    insiders: 'all',
+    dm200: 'all',
+  });
 
   const processedAndSortedData = useMemo(() => {
+    // 1. Process data by adding calculated fields
     const processedData = data.map((indicator) => {
       const insidersQuantidade =
         indicator.data_insiders?.items?.reduce(
@@ -66,8 +86,9 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
 
       const peaksValleysData = indicator.data_peaks_valleys;
       const signalBuy = peaksValleysData?.signal_buy;
+      const signalSell = peaksValleysData?.signal_sell;
 
-      const dm200Score = signalBuy ? 2 : 0;
+      const dm200Score = (signalBuy && !signalSell) ? 2 : 0;
 
       const volumeData = commonData?.data_volume?.items?.[indicator.ticker];
       const isHighChangeVolume = !!(volumeData && volumeData.change > 1);
@@ -105,7 +126,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       
       const scoreBreakdown = {
           "obv_ascendente": indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0,
-          "adx_positivo": indicator.data_adx?.values?.plus_di_signal ? 1 : 0,
+          "adx_positivo": indicator.data_adx?.values?.plus_di_signal && !indicator.data_adx?.values?.minus_di_signal ? 1 : 0,
           "insiders_compra": insidersQuantidade > 0 ? 1 : 0,
           "pl_descontado": plScore,
           "dy_alto": dyScore,
@@ -127,7 +148,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           dy,
           mLiquida,
           signalBuy,
-          signalSell: peaksValleysData?.signal_sell,
+          signalSell,
           isHighChangeVolume,
           volumeData,
           isMagicFormula,
@@ -139,11 +160,54 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       };
     });
 
+    // 2. Filter data based on arrow selections
+    const filteredData = processedData.filter(indicator => {
+      const { _calculated } = indicator;
+
+      if (arrowFilters.pl !== 'all') {
+        const isUp = _calculated.plHistoricoMedia != null && _calculated.pl != null && _calculated.plHistoricoMedia > _calculated.pl;
+        const isDown = _calculated.plHistoricoMedia != null && _calculated.pl != null && _calculated.plHistoricoMedia < _calculated.pl;
+        if (arrowFilters.pl === 'up' && !isUp) return false;
+        if (arrowFilters.pl === 'down' && !isDown) return false;
+      }
+
+      if (arrowFilters.obv !== 'all') {
+        const isUp = indicator.data_obv?.trajectory === 'ascendente';
+        const isDown = indicator.data_obv?.trajectory === 'descendente';
+        if (arrowFilters.obv === 'up' && !isUp) return false;
+        if (arrowFilters.obv === 'down' && !isDown) return false;
+      }
+
+      if (arrowFilters.adx !== 'all') {
+        const isUp = !!indicator.data_adx?.values?.plus_di_signal;
+        const isDown = !isUp && !!indicator.data_adx?.values?.minus_di_signal;
+        if (arrowFilters.adx === 'up' && !isUp) return false;
+        if (arrowFilters.adx === 'down' && !isDown) return false;
+      }
+
+      if (arrowFilters.insiders !== 'all') {
+        const isUp = _calculated.insidersQuantidade > 0;
+        const isDown = _calculated.insidersQuantidade < 0;
+        if (arrowFilters.insiders === 'up' && !isUp) return false;
+        if (arrowFilters.insiders === 'down' && !isDown) return false;
+      }
+
+      if (arrowFilters.dm200 !== 'all') {
+        const isUp = !!_calculated.signalBuy && !_calculated.signalSell;
+        const isDown = !_calculated.signalBuy && !!_calculated.signalSell;
+        if (arrowFilters.dm200 === 'up' && !isUp) return false;
+        if (arrowFilters.dm200 === 'down' && !isDown) return false;
+      }
+
+      return true;
+    });
+
+    // 3. Sort data
     if (sortConfig.length === 0) {
-      return processedData;
+      return filteredData;
     }
 
-    return [...processedData].sort((a, b) => {
+    return [...filteredData].sort((a, b) => {
       for (const { key, direction } of sortConfig) {
         let valA, valB;
         switch (key) {
@@ -172,7 +236,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
       }
       return 0;
     });
-  }, [data, commonData, sortConfig]);
+  }, [data, commonData, sortConfig, arrowFilters]);
 
   const handleSort = (key: SortKey) => {
     setSortConfig(prevConfig => {
@@ -205,6 +269,35 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
     return <ArrowUp className="h-4 w-4 ml-1" />;
   };
 
+  const ArrowFilterDropdown = ({ filterKey, title }: { filterKey: ArrowFilterKeys; title: string }) => (
+    <div className="flex items-center gap-1">
+        <span>{title}</span>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2">
+                    <Filter className="h-4 w-4 text-muted-foreground/70" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+                <DropdownMenuLabel>Filtrar por Seta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                    value={arrowFilters[filterKey]}
+                    onValueChange={(value) => {
+                        if (value === 'all' || value === 'up' || value === 'down') {
+                            setArrowFilters(prev => ({ ...prev, [filterKey]: value as ArrowFilter }));
+                        }
+                    }}
+                >
+                    <DropdownMenuRadioItem value="all">Todas</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="up">Cima</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="down">Baixo</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    </div>
+  );
+
 
   return (
     <>
@@ -230,10 +323,18 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         Upside {getSortIcon('upside')}
                     </Button>
                   </TableHead>
-                  <TableHead>P/L Médio</TableHead>
-                  <TableHead>OBV</TableHead>
-                  <TableHead>ADX</TableHead>
-                  <TableHead>Insiders</TableHead>
+                  <TableHead>
+                    <ArrowFilterDropdown filterKey="pl" title="P/L Médio" />
+                  </TableHead>
+                  <TableHead>
+                    <ArrowFilterDropdown filterKey="obv" title="OBV" />
+                  </TableHead>
+                  <TableHead>
+                    <ArrowFilterDropdown filterKey="adx" title="ADX" />
+                  </TableHead>
+                  <TableHead>
+                    <ArrowFilterDropdown filterKey="insiders" title="Insiders" />
+                  </TableHead>
                   <TableHead>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -245,14 +346,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                     </Tooltip>
                   </TableHead>
                   <TableHead>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">DM200</span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>distancia da media de 200</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <ArrowFilterDropdown filterKey="dm200" title="DM200" />
                   </TableHead>
                   <TableHead>
                     <Tooltip>
