@@ -2,7 +2,13 @@ export type Indicator = {
   id: number;
   ticker: string;
   image_mt5: string | null;
-  data_shark: any | null;
+  data_shark: {
+    generated_at: string;
+    items: {
+      acionista: string;
+      participacao: string;
+    }[];
+  } | null;
   data_obv: {
     trajectory: 'ascendente' | 'descendente';
   } | null;

@@ -114,7 +114,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
 
       const score =
         (indicator.data_obv?.trajectory === 'ascendente' ? 1 : 0) +
-        (indicator.data_adx?.values?.plus_di_signal ? 1 : 0) +
+        (indicator.data_adx?.values?.plus_di_signal && !indicator.data_adx?.values?.minus_di_signal ? 1 : 0) +
         (insidersQuantidade > 0 ? 1 : 0) +
         plScore +
         dyScore +
@@ -640,7 +640,18 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         </TableCell>
                         <TableCell
                             className="cursor-pointer hover:bg-muted"
-                            onClick={() => setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: indicator.data_shark ?? { info: 'Nenhum dado encontrado.' } })}
+                            onClick={() => {
+                              if (indicator.data_shark && Array.isArray(indicator.data_shark.items)) {
+                                const processedData = indicator.data_shark.items.map(item => ({
+                                  acionista: item.acionista,
+                                  participacao: item.participacao,
+                                  generated_at: indicator.data_shark.generated_at,
+                                }));
+                                setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: processedData.length > 0 ? processedData : { info: "Nenhum dado encontrado" } });
+                              } else {
+                                setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: { info: "Nenhum dado encontrado" } });
+                              }
+                            }}
                         >
                             <Tooltip>
                             <TooltipTrigger asChild>
