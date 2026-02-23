@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
-import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown, Notebook, Filter } from "lucide-react";
+import { ImageIcon, ImageOff, ArrowUp, ArrowDown, Minus, Star, ArrowUpDown, Notebook, Filter, Fish } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import JsonAsTable from "./json-as-table";
 import {
@@ -363,6 +363,16 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                           Score {getSortIcon('score')}
                       </Button>
                   </TableHead>
+                   <TableHead>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">Shark</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Indicador Shark</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
                   <TableHead className="text-right w-[120px]">Imagem</TableHead>
                   <TableHead className="text-center w-[120px]">Anotações</TableHead>
                 </TableRow>
@@ -628,6 +638,23 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                             <TooltipContent><p>Score Total</p></TooltipContent>
                           </Tooltip>
                         </TableCell>
+                        <TableCell
+                            className="cursor-pointer hover:bg-muted"
+                            onClick={() => setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: indicator.data_shark ?? { info: 'Nenhum dado encontrado.' } })}
+                        >
+                            <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div className="flex items-center">
+                                    {indicator.data_shark ? (
+                                    <Fish className="h-5 w-5 text-accent" />
+                                    ) : (
+                                    <Minus className="h-5 w-5 text-muted-foreground" />
+                                    )}
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Indicador Shark</p></TooltipContent>
+                            </Tooltip>
+                        </TableCell>
                         <TableCell className="text-right">
                           {indicator.image_mt5 ? (
                             <Button
@@ -663,7 +690,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={14} className="h-24 text-center">
+                    <TableCell colSpan={15} className="h-24 text-center">
                       <p className="font-medium">Nenhum dado encontrado</p>
                       <p className="text-sm text-muted-foreground">
                         Verifique se sua tabela 'indicators' no Supabase contém dados.

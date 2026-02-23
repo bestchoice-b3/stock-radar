@@ -2,6 +2,7 @@ export type Indicator = {
   id: number;
   ticker: string;
   image_mt5: string | null;
+  data_shark: any | null;
   data_obv: {
     trajectory: 'ascendente' | 'descendente';
   } | null;
@@ -15,9 +16,9 @@ export type Indicator = {
   } | null;
   data_insiders: {
     items: {
-      quantidade: number;
       date: string;
       valor: number;
+      quantidade: number;
     }[];
   } | null;
   data_indicators: {

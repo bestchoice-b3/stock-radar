@@ -33,7 +33,7 @@ export default async function Home() {
 
   const { data, error } = await supabase
     .from('indicators')
-    .select('id,ticker,image_mt5,data_obv,data_adx,data_insiders,data_indicators,data_peaks_valleys')
+    .select('id,ticker,image_mt5,data_obv,data_adx,data_insiders,data_indicators,data_peaks_valleys,data_shark')
     .order('id', { ascending: false });
     
   const { data: commonData, error: commonError } = await supabase
