@@ -38,7 +38,7 @@ export default async function Home() {
     
   const { data: commonData, error: commonError } = await supabase
     .from('indicators_common')
-    .select('data_volume,data_magic_formula')
+    .select('data_volume,data_magic_formula,data_sharks')
     .limit(1)
     .single();
 

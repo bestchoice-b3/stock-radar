@@ -37,6 +37,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "./ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type IndicatorsTableProps = {
   data: Indicator[];
@@ -63,6 +64,13 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
   });
 
   const processedAndSortedData = useMemo(() => {
+    // Create a set of tickers held by "sharks" (investors in > 2 companies)
+    const sharkTickers = new Set(
+      commonData?.data_sharks?.items
+        ?.filter(shark => shark.quantity > 2)
+        .flatMap(shark => shark.items) ?? []
+    );
+
     // 1. Process data by adding calculated fields
     const processedData = data.map((indicator) => {
       const insidersQuantidade =
@@ -138,6 +146,8 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           "score_total": score
       };
 
+      const isSharkTarget = sharkTickers.has(indicator.ticker);
+
       return {
         ...indicator,
         _calculated: {
@@ -156,6 +166,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
           score,
           scoreBreakdown,
           upside,
+          isSharkTarget,
         },
       };
     });
@@ -395,6 +406,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                       score,
                       scoreBreakdown,
                       upside,
+                      isSharkTarget,
                     } = indicator._calculated;
 
                     return (
@@ -659,13 +671,15 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                             <TooltipTrigger asChild>
                                 <div className="flex items-center">
                                     {indicator.data_shark ? (
-                                    <Fish className="h-5 w-5 text-accent" />
+                                    <Fish className={cn("h-5 w-5", isSharkTarget ? 'text-destructive' : 'text-accent')} />
                                     ) : (
                                     <Minus className="h-5 w-5 text-muted-foreground" />
                                     )}
                                 </div>
                             </TooltipTrigger>
-                            <TooltipContent><p>Indicador Shark</p></TooltipContent>
+                             <TooltipContent>
+                                {isSharkTarget ? <p>Este ativo é um alvo de Shark!</p> : <p>Indicador Shark</p>}
+                            </TooltipContent>
                             </Tooltip>
                         </TableCell>
                         <TableCell className="text-right">

@@ -84,6 +84,13 @@ export type IndicatorsCommonData = {
       };
     };
   } | null;
+  data_sharks: {
+    items: {
+      shark_name: string;
+      quantity: number;
+      items: string[];
+    }[];
+  } | null;
 } | null;
 
 export type Note = {
