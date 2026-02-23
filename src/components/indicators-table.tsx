@@ -657,12 +657,12 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                           </Tooltip>
                         </TableCell>
                         <TableCell
-                          className="cursor-pointer hover:bg-muted"
+                          className="cursor-pointer hover:bg-muted text-center"
                           onClick={() => setJsonData({ title: `Cálculo do Score: ${indicator.ticker}`, data: scoreBreakdown })}
                         >
                            <Tooltip>
                             <TooltipTrigger asChild>
-                              <span>{score}</span>
+                              <span className="font-bold text-sm">{score}</span>
                             </TooltipTrigger>
                             <TooltipContent><p>Score Total</p></TooltipContent>
                           </Tooltip>
