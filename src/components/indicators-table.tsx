@@ -48,7 +48,7 @@ type SortKey = 'dy' | 'mLiquida' | 'score' | 'upside';
 type SortDirection = 'asc' | 'desc';
 
 type ArrowFilter = 'all' | 'up' | 'down';
-type ArrowFilterKeys = 'pl' | 'obv' | 'adx' | 'insiders' | 'dm200';
+type ArrowFilterKeys = 'pl' | 'obv' | 'adx' | 'insiders' | 'dm200' | 'shark';
 
 export default function IndicatorsTable({ data, commonData }: IndicatorsTableProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -61,6 +61,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
     adx: 'all',
     insiders: 'all',
     dm200: 'all',
+    shark: 'all',
   });
 
   const processedAndSortedData = useMemo(() => {
@@ -210,6 +211,11 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
         if (arrowFilters.dm200 === 'down' && !isDown) return false;
       }
 
+      if (arrowFilters.shark !== 'all') {
+        if (arrowFilters.shark === 'up' && !_calculated.isSharkTarget) return false;
+        if (arrowFilters.shark === 'down' && _calculated.isSharkTarget) return false;
+      }
+
       return true;
     });
 
@@ -280,7 +286,19 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
     return <ArrowUp className="h-4 w-4 ml-1" />;
   };
 
-  const ArrowFilterDropdown = ({ filterKey, title }: { filterKey: ArrowFilterKeys; title: string }) => (
+  const ArrowFilterDropdown = ({ 
+    filterKey, 
+    title, 
+    upLabel = "Cima", 
+    downLabel = "Baixo",
+    menuLabel = "Filtrar por Seta"
+  }: { 
+    filterKey: ArrowFilterKeys; 
+    title: string;
+    upLabel?: string;
+    downLabel?: string;
+    menuLabel?: string;
+  }) => (
     <div className="flex items-center gap-1">
         <span>{title}</span>
         <DropdownMenu>
@@ -290,7 +308,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-                <DropdownMenuLabel>Filtrar por Seta</DropdownMenuLabel>
+                <DropdownMenuLabel>{menuLabel}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
                     value={arrowFilters[filterKey]}
@@ -301,8 +319,8 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                     }}
                 >
                     <DropdownMenuRadioItem value="all">Todas</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="up">Cima</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="down">Baixo</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="up">{upLabel}</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="down">{downLabel}</DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -375,14 +393,13 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                       </Button>
                   </TableHead>
                    <TableHead>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">Shark</span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Indicador Shark</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <ArrowFilterDropdown 
+                      filterKey="shark"
+                      title="Shark"
+                      upLabel="Alvo"
+                      downLabel="Não-Alvo"
+                      menuLabel="Filtrar por Alvo de Shark"
+                    />
                   </TableHead>
                   <TableHead className="text-right w-[120px]">Imagem</TableHead>
                   <TableHead className="text-center w-[120px]">Anotações</TableHead>
