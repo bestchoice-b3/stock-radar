@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Visualizador de Dados do Supabase',
+  title: 'StockRadar BR',
   description: 'Um aplicativo Next.js para listar dados de uma tabela Supabase.',
 };
 

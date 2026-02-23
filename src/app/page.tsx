@@ -13,7 +13,7 @@ export default async function Home() {
       <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
         <div className="z-10 w-full max-w-7xl">
           <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-8">
-            Visualizador de Dados do Supabase
+            StockRadar BR
           </h1>
         </div>
         <Alert variant="destructive" className="w-full max-w-7xl mb-8">
@@ -50,7 +50,7 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col items-center p-4 md:p-12 lg:p-24 bg-background">
       <div className="z-10 w-full max-w-7xl">
         <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-8">
-          Visualizador de Dados do Supabase
+          StockRadar BR
         </h1>
       </div>
 
