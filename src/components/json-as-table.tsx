@@ -80,15 +80,17 @@ export default function JsonAsTable({ data }: JsonAsTableProps) {
   }
 
   return (
-    <Table className="table-fixed">
-      <TableBody>
-        {Object.entries(data).map(([key, value]) => (
-          <TableRow key={key}>
-            <TableCell className="font-medium w-1/4 break-words align-top">{key}</TableCell>
-            <TableCell className="w-3/4">{renderValue(value)}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table className="table-fixed">
+        <TableBody>
+          {Object.entries(data).map(([key, value]) => (
+            <TableRow key={key}>
+              <TableCell className="font-medium w-1/4 break-words align-top">{key}</TableCell>
+              <TableCell className="w-3/4">{renderValue(value)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
