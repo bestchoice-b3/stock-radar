@@ -66,9 +66,9 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
   const processedAndSortedData = useMemo(() => {
     // Create a set of tickers held by "sharks" (investors in > 2 companies)
     const sharkTickers = new Set(
-      commonData?.data_sharks?.items
+      (commonData?.data_sharks
         ?.filter(shark => shark.quantity > 2)
-        .flatMap(shark => shark.items) ?? []
+        .flatMap(shark => shark.items)) ?? []
     );
 
     // 1. Process data by adding calculated fields
