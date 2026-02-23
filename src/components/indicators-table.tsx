@@ -641,13 +641,15 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         <TableCell
                             className="cursor-pointer hover:bg-muted"
                             onClick={() => {
-                              if (indicator.data_shark && Array.isArray(indicator.data_shark.items)) {
-                                const processedData = indicator.data_shark.items.map(item => ({
-                                  acionista: item.acionista,
-                                  participacao: item.participacao,
-                                  generated_at: indicator.data_shark.generated_at,
-                                }));
-                                setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: processedData.length > 0 ? processedData : { info: "Nenhum dado encontrado" } });
+                              if (indicator.data_shark && Array.isArray(indicator.data_shark.items) && indicator.data_shark.items.length > 0) {
+                                const displayData = {
+                                    'Data de Geração': indicator.data_shark.generated_at,
+                                    'Acionistas': indicator.data_shark.items.map(item => ({
+                                        acionista: item.acionista,
+                                        participacao: item.participacao,
+                                    }))
+                                };
+                                setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: displayData });
                               } else {
                                 setJsonData({ title: `Indicador Shark: ${indicator.ticker}`, data: { info: "Nenhum dado encontrado" } });
                               }
