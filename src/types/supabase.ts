@@ -99,3 +99,19 @@ export type Note = {
   user_id: string;
   importance: number;
 };
+
+export type Wallet = {
+  id: number;
+  created_at: string;
+  ticker: string;
+  user_id: string;
+};
+
+export type Todo = {
+  id: number;
+  created_at: string;
+  ticker: string;
+  operation: string;
+  note: string | null;
+  user_id: string;
+};

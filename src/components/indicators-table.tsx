@@ -28,6 +28,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import NotesModal from "./notes-modal";
+import Dm200Arrow from "@/components/dm200-arrow";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -620,13 +621,7 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="flex items-center">
-                                {signalBuy === signalSell ? (
-                                  <Minus className="h-5 w-5 text-muted-foreground" />
-                                ) : signalBuy ? (
-                                  <ArrowUp className="h-5 w-5 text-[hsl(var(--chart-2))]" />
-                                ) : (
-                                  <ArrowDown className="h-5 w-5 text-destructive" />
-                                )}
+                                <Dm200Arrow signalBuy={signalBuy} signalSell={signalSell} />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent><p>Sinal de Média Móvel 200</p></TooltipContent>
