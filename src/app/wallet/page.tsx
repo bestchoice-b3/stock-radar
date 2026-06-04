@@ -195,7 +195,14 @@ export default function WalletPage() {
                 rows.map((row) => (
                   <Card key={row.id} className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{row.ticker}</span>
+                      <a
+                        href={`https://statusinvest.com.br/acoes/${row.ticker}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-sm"
+                      >
+                        {row.ticker}
+                      </a>
                       <Button
                         variant="ghost"
                         size="icon"

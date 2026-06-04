@@ -308,9 +308,15 @@ export default function TodoPage() {
                       <div className="h-full flex flex-col">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1">
-                            <span className="font-medium text-sm leading-none">
+                            <a
+                              href={`https://statusinvest.com.br/acoes/${row.ticker}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="font-medium text-sm leading-none"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               {row.ticker}
-                            </span>
+                            </a>
                             {walletTickers.has(row.ticker) && (
                               <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
                             )}

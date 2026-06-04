@@ -4,7 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ListTodo, Loader2, Radar } from "lucide-react";
+import {
+  ArrowLeftRight,
+  LayoutDashboard,
+  ListTodo,
+  Loader2,
+  Radar,
+  Wallet,
+} from "lucide-react";
 
 export default function GlobalHeader() {
   const pathname = usePathname();
@@ -30,6 +37,24 @@ export default function GlobalHeader() {
               <Link href="/" aria-label="Radar" onClick={() => handleNavigate("/")}
               >
                 <Radar className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href="/wallet"
+                aria-label="Wallet"
+                onClick={() => handleNavigate("/wallet")}
+              >
+                <Wallet className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href="/foreign-flow"
+                aria-label="Foreign Flow"
+                onClick={() => handleNavigate("/foreign-flow")}
+              >
+                <ArrowLeftRight className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>

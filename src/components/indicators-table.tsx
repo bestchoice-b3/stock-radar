@@ -435,7 +435,14 @@ export default function IndicatorsTable({ data, commonData }: IndicatorsTablePro
                         >
                            <Tooltip>
                             <TooltipTrigger asChild>
-                               <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
+                               <a
+                                 href={`https://statusinvest.com.br/acoes/${indicator.ticker}`}
+                                 target="_blank"
+                                 rel="noreferrer"
+                                 onClick={(e) => e.stopPropagation()}
+                               >
+                                 <Badge variant="outline" className="font-medium">{indicator.ticker}</Badge>
+                               </a>
                             </TooltipTrigger>
                             <TooltipContent><p>Ativo</p></TooltipContent>
                           </Tooltip>
