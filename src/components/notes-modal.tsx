@@ -32,6 +32,9 @@ type NotesModalProps = {
 const USER_ID_KEY = "supabase_user_email";
 
 export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps) {
+  const sb = "error" in supabase ? null : supabase;
+  const configError = "error" in supabase ? supabase.error : null;
+
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [tempEmail, setTempEmail] = useState("");
   const [notes, setNotes] = useState<Note[]>([]);
@@ -66,11 +69,15 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
 
   async function fetchNotes() {
     if (!ticker || !userEmail) return;
+    if (!sb) {
+      setError("Não foi possível conectar ao Supabase. Verifique suas configurações.");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from("notes")
       .select("*")
       .eq("ticker", ticker)
@@ -97,11 +104,15 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
 
   const handleSaveNote = async () => {
     if (!newNote.trim() || !ticker || !userEmail) return;
+    if (!sb) {
+      setError("Não foi possível conectar ao Supabase. Verifique suas configurações.");
+      return;
+    }
 
     setIsSaving(true);
     setError(null);
 
-    const { data: newNoteData, error: insertError } = await supabase
+    const { data: newNoteData, error: insertError } = await sb
       .from("notes")
       .insert([{ comment: newNote, ticker: ticker, user_id: userEmail, importance: importance }])
       .select()
@@ -154,6 +165,16 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
           </form>
         ) : (
           <>
+            {configError && (
+              <Alert variant="destructive">
+                <AlertDescription>
+                  Não foi possível conectar ao Supabase. Verifique suas configurações.
+                  <pre className="mt-2 text-xs bg-destructive-foreground/10 p-2 rounded-md font-code">
+                    {configError}
+                  </pre>
+                </AlertDescription>
+              </Alert>
+            )}
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -164,7 +185,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
                 <Textarea
                   placeholder="Digite sua anotação aqui..."
                   value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
+                  onChange={(e) => setNewNote(e.target.value.toUpperCase())}
                   rows={3}
                   disabled={isSaving}
                 />

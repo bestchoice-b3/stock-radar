@@ -115,3 +115,9 @@ export type Todo = {
   note: string | null;
   user_id: string;
 };
+
+export type TickerRow = {
+  id: number;
+  created_at: string;
+  ticker: string;
+};

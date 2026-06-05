@@ -85,6 +85,13 @@ export default function TodoPage() {
   const normalizedOperation = useMemo(() => operation.trim(), [operation]);
   const normalizedNote = useMemo(() => note.trim(), [note]);
 
+  const sortByTicker = (items: Todo[]) =>
+    [...items].sort((a, b) =>
+      (a.ticker ?? "")
+        .trim()
+        .localeCompare((b.ticker ?? "").trim(), "pt-BR", { sensitivity: "base" })
+    );
+
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!tempEmail.trim()) return;
@@ -104,13 +111,13 @@ export default function TodoPage() {
       .from("todo")
       .select("*")
       .eq("user_id", userEmail)
-      .order("created_at", { ascending: false });
+      .order("ticker", { ascending: true });
 
     if (error) {
       setError(`Erro ao buscar TODO: ${error.message}`);
       setRows([]);
     } else {
-      setRows((data as Todo[]) || []);
+      setRows(sortByTicker((data as Todo[]) || []));
     }
 
     setIsLoading(false);
@@ -125,6 +132,11 @@ export default function TodoPage() {
     const op = normalizedOperation;
 
     if (!t || !op) return;
+
+    if (rows.some((r) => r.ticker === t)) {
+      setError(`Ticker já cadastrado: ${t}`);
+      return;
+    }
 
     setIsSaving(true);
     setError(null);
@@ -145,7 +157,9 @@ export default function TodoPage() {
     if (error) {
       setError(`Erro ao cadastrar TODO: ${error.message}`);
     } else if (data) {
-      setRows([data as Todo, ...rows]);
+      setRows(
+        sortByTicker([data as Todo, ...rows])
+      );
       setTicker("");
       setOperation("");
       setNote("");
@@ -235,7 +249,7 @@ export default function TodoPage() {
                     id="ticker"
                     placeholder="Ticker (ex: PETR4)"
                     value={ticker}
-                    onChange={(e) => setTicker(e.target.value)}
+                    onChange={(e) => setTicker(e.target.value.toUpperCase())}
                     disabled={isSaving}
                   />
                   <select
@@ -258,7 +272,7 @@ export default function TodoPage() {
                   id="note"
                   placeholder="Nota (opcional)"
                   value={note}
-                  onChange={(e) => setNote(e.target.value)}
+                  onChange={(e) => setNote(e.target.value.toUpperCase())}
                   disabled={isSaving}
                 />
 

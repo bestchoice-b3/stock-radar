@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeftRight,
+  Hash,
   LayoutDashboard,
   ListTodo,
   Loader2,
@@ -46,6 +47,15 @@ export default function GlobalHeader() {
                 onClick={() => handleNavigate("/wallet")}
               >
                 <Wallet className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href="/tickers"
+                aria-label="Tickers"
+                onClick={() => handleNavigate("/tickers")}
+              >
+                <Hash className="h-5 w-5" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
