@@ -33,7 +33,7 @@ type DashboardIndicator = {
   data_peaks_valleys: Indicator["data_peaks_valleys"];
   data_indicators: Indicator["data_indicators"];
   data_mt5?: {
-    m9_signal?: string | null;
+    m9_signal?: "BUY" | "SELL" | "NEUTRAL" | string | null;
     volumeMoveAverage?: {
       signal?: "HIGH_VOLUME" | "LOW_VOLUME" | string | null;
     } | null;
@@ -525,7 +525,8 @@ export default function DashboardClient() {
                 const signalBuy = indicator.data_peaks_valleys?.signal_buy;
                 const signalSell = indicator.data_peaks_valleys?.signal_sell;
                 const m9Signal = indicator.data_mt5?.m9_signal;
-                const hasM9Up = m9Signal === "UP";
+                const hasM9Buy = m9Signal === "BUY";
+                const hasM9Sell = m9Signal === "SELL";
 
                 const isOpen = openActionsTicker === indicator.ticker;
 
@@ -546,10 +547,16 @@ export default function DashboardClient() {
                             <span>{indicator.ticker}</span>
                             <div className="flex items-center gap-2">
                               <Dm200Arrow signalBuy={signalBuy} signalSell={signalSell} />
-                              {hasM9Up && (
+                              {hasM9Buy && (
                                 <TrendingUp
                                   className="h-4 w-4 text-[hsl(var(--chart-2))]"
-                                  aria-label="M9 UP"
+                                  aria-label="M9 BUY"
+                                />
+                              )}
+                              {hasM9Sell && (
+                                <TrendingDown
+                                  className="h-4 w-4 text-destructive"
+                                  aria-label="M9 SELL"
                                 />
                               )}
                               <StarBadge ticker={indicator.ticker} />
@@ -621,7 +628,8 @@ export default function DashboardClient() {
                 const signalBuy = indicator.data_peaks_valleys?.signal_buy;
                 const signalSell = indicator.data_peaks_valleys?.signal_sell;
                 const m9Signal = indicator.data_mt5?.m9_signal;
-                const hasM9Down = m9Signal === "DOWN";
+                const hasM9Buy = m9Signal === "BUY";
+                const hasM9Sell = m9Signal === "SELL";
 
                 const isOpen = openActionsTicker === indicator.ticker;
 
@@ -642,10 +650,16 @@ export default function DashboardClient() {
                             <span>{indicator.ticker}</span>
                             <div className="flex items-center gap-2">
                               <Dm200Arrow signalBuy={signalBuy} signalSell={signalSell} />
-                              {hasM9Down && (
+                              {hasM9Buy && (
+                                <TrendingUp
+                                  className="h-4 w-4 text-[hsl(var(--chart-2))]"
+                                  aria-label="M9 BUY"
+                                />
+                              )}
+                              {hasM9Sell && (
                                 <TrendingDown
                                   className="h-4 w-4 text-destructive"
-                                  aria-label="M9 DOWN"
+                                  aria-label="M9 SELL"
                                 />
                               )}
                               <StarBadge ticker={indicator.ticker} />
@@ -718,8 +732,8 @@ export default function DashboardClient() {
                 const signalBuy = indicator.data_peaks_valleys?.signal_buy;
                 const signalSell = indicator.data_peaks_valleys?.signal_sell;
                 const m9Signal = indicator.data_mt5?.m9_signal;
-                const hasM9Up = m9Signal === "UP";
-                const hasM9Down = m9Signal === "DOWN";
+                const hasM9Buy = m9Signal === "BUY";
+                const hasM9Sell = m9Signal === "SELL";
                 const trend = getDm200Trend(signalBuy, signalSell);
                 const isOpen = openActionsTicker === indicator.ticker;
                 const trendClass =
@@ -747,16 +761,16 @@ export default function DashboardClient() {
                             <span>{indicator.ticker}</span>
                             <div className="flex items-center gap-2">
                               <Dm200Arrow signalBuy={signalBuy} signalSell={signalSell} />
-                              {hasM9Up && (
+                              {hasM9Buy && (
                                 <TrendingUp
                                   className="h-4 w-4 text-[hsl(var(--chart-2))]"
-                                  aria-label="M9 UP"
+                                  aria-label="M9 BUY"
                                 />
                               )}
-                              {hasM9Down && (
+                              {hasM9Sell && (
                                 <TrendingDown
                                   className="h-4 w-4 text-destructive"
-                                  aria-label="M9 DOWN"
+                                  aria-label="M9 SELL"
                                 />
                               )}
                               <StarBadge ticker={indicator.ticker} />
@@ -830,10 +844,10 @@ export default function DashboardClient() {
               <ArrowDown className="h-4 w-4 text-destructive" />
               <span>DM200: sinal de venda</span>
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Minus className="h-4 w-4" />
               <span>DM200: neutro</span>
-            </div>
+            </div> */}
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
               <span>Ticker está na sua wallet</span>

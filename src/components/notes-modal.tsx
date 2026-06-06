@@ -185,7 +185,7 @@ export default function NotesModal({ ticker, isOpen, onClose }: NotesModalProps)
                 <Textarea
                   placeholder="Digite sua anotação aqui..."
                   value={newNote}
-                  onChange={(e) => setNewNote(e.target.value.toUpperCase())}
+                  onChange={(e) => setNewNote(e.target.value)}
                   rows={3}
                   disabled={isSaving}
                 />

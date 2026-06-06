@@ -21,7 +21,7 @@ export type Indicator = {
       vs_ma9?: string;
       distance_pct?: number;
     };
-    m9_signal?: string;
+    m9_signal?: "BUY" | "SELL" | "NEUTRAL" | string;
     volumeMoveAverage?: {
       signal?: "HIGH_VOLUME" | "LOW_VOLUME" | string;
       volume_ma?: number;

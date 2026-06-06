@@ -16,7 +16,7 @@ export default function Dm200Arrow({
   const trend = getDm200Trend(signalBuy, signalSell);
 
   if (trend === "neutral") {
-    return <Minus className={className ?? "h-5 w-5 text-muted-foreground"} />;
+    return <> </>; //<Minus className={className ?? "h-5 w-5 text-muted-foreground"} />
   }
 
   if (trend === "up") {
