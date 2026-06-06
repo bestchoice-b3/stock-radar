@@ -34,6 +34,9 @@ type DashboardIndicator = {
   data_indicators: Indicator["data_indicators"];
   data_mt5?: {
     m9_signal?: string | null;
+    volumeMoveAverage?: {
+      signal?: "HIGH_VOLUME" | "LOW_VOLUME" | string | null;
+    } | null;
   } | null;
 };
 
@@ -373,10 +376,9 @@ export default function DashboardClient() {
 
   const volumeTickers = useMemo(() => {
     return indicators.filter((indicator) => {
-      const volumeData = commonData?.data_volume?.items?.[indicator.ticker];
-      return !!(volumeData && volumeData.change > 1);
+      return indicator.data_mt5?.volumeMoveAverage?.signal === "HIGH_VOLUME";
     });
-  }, [indicators, commonData]);
+  }, [indicators]);
 
   if (!sb) {
     return (

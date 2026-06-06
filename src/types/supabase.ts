@@ -2,6 +2,33 @@ export type Indicator = {
   id: number;
   ticker: string;
   image_mt5: string | null;
+  data_mt5: {
+    ma9?: {
+      prev?: number;
+      value?: number;
+      period?: number;
+      applied?: string;
+      timeframe?: string;
+    };
+    meta?: {
+      sent_at?: string;
+      local_time?: string;
+      server_time?: string;
+    };
+    price?: {
+      ask?: number;
+      bid?: number;
+      vs_ma9?: string;
+      distance_pct?: number;
+    };
+    m9_signal?: string;
+    volumeMoveAverage?: {
+      signal?: "HIGH_VOLUME" | "LOW_VOLUME" | string;
+      volume_ma?: number;
+      volume_real?: number;
+      volume_ratio?: number;
+    };
+  } | null;
   data_shark: {
     generated_at: string;
     items: {
